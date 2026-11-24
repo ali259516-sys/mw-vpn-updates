@@ -1,11 +1,11 @@
 {
-  "seq": 1,
+  "seq": 2,
   "version_code": 95,
   "version_name": "8.0",
   "min_version_code": 95,
-  "apk_url": "https://github.com/ali259516-sys/mw-vpn-updates/releases/download/v8.0/MaintenanceWorld_VPN_v8.0_Official.apk",
-  "apk_sha256": "c6c09022ecd5cfec1714b409d94986633c0a7a0f256595c5f2b0d10b8722ae27",
+  "apk_url": "https://cdn.jsdelivr.net/gh/ali259516-sys/mw-vpn-updates@8d14eff2bbf130f3961dc21453234e4b18d7ae20/releases/MaintenanceWorld_VPN_v8.0_Official.apk",
+  "apk_sha256": "449828375a9f33d46faf9e39fd12d422014e1c0f1ed5565e1f2813339e8c8a49",
   "apk_size": 164364,
-  "changelog": "تحسينات",
-  "sig": "MEQCIEniOdNUOJUyqUFNjyfrxYyEwxBKCaAqt5pDvWrOiixRAiAOZoWsGK3dYOIxyvynLgweL6jFw2VC9_mHlMALgeCnqQ"
+  "changelog": "بحبك",
+  "sig": "MEUCIQDGrJWHuUP1DAkAb39F8Cjas5nyBHsBTBDUBJn9wf3ZgwIgOL6TqdHtLFZVImnMS5MiYqxAWqu_52lf5glBATR3Hus"
 }
