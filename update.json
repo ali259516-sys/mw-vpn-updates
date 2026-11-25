@@ -1,11 +1,15 @@
 {
-  "seq": 3,
-  "version_code": 96,
-  "version_name": "8.1",
-  "min_version_code": 96,
-  "apk_url": "https://cdn.jsdelivr.net/gh/ali259516-sys/mw-vpn-updates@cd3b69c44e9503a3ff3f201f0550412ba12cc9ea/releases/MaintenanceWorld_VPN_v8.1_Official.apk",
-  "apk_sha256": "792fb403424a830b253eb19f639f2a66155806a5d4964011ad7807f2a4c89d18",
-  "apk_size": 164364,
-  "changelog": "بحبك",
-  "sig": "MEQCIAu3krO0awdR5UDUFymJsj7U6l3e6MHxjWhzVSlgBXYPAiAvoWOWq66k7zYq2C9VKCts88eYL6PCN9ZnwZQ3a66OnQ"
+  "seq": 4,
+  "version_code": 97,
+  "version_name": "8.2",
+  "min_version_code": 97,
+  "apk_url": "https://cdn.jsdelivr.net/gh/ali259516-sys/mw-vpn-updates@a1b9c053bf8c7c577ea326d6ebbd6a9c7353fcec/releases/MaintenanceWorld_VPN_v8.2_Official.apk",
+  "apk_sha256": "22f48ea2869db4c96100d731b81b0ba5b91fd15493119982714618758a42b7af",
+  "apk_size": 168460,
+  "changelog": "12",
+  "kill_switch": false,
+  "kill_message": "",
+  "revoked_devices": [],
+  "sig": "MEUCIBtqOIET4g5FNs4cva5KEHWrYWQbYG-Aqz7ji--498E1AiEAxP2pShBfkXje85-GbxqU5q0rWrI-OzHwpsaQ_tJkZ-w",
+  "sig_v2": "MEUCIQCPWKJTphAlI4ymgKwox3FtqP2lSXdYA6Doy5__UWDJCgIgKUhXx1sf1nsxmgI2NMuk4d2UdJJRu3TlB5kcKj2bhjQ"
 }
