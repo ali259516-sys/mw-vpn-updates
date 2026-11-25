@@ -1,5 +1,5 @@
 {
-  "seq": 1795626401,
+  "seq": 1795626540,
   "version_code": 114,
   "version_name": "9.9",
   "min_version_code": 114,
@@ -10,8 +10,8 @@
   "kill_switch": false,
   "kill_message": "تم إيقاف التطبيق مؤقتاً للصيانة من قبل مركز عالم الصيانة.",
   "revoked_devices": [],
-  "ext_b64": "eyJhbm4iOnsiYWN0aXZlIjpmYWxzZSwiaWQiOjAsInRpdGxlIjoiIiwiYm9keSI6IiIsInVybCI6IiIsImltZ191cmwiOiIifSwiZG1zZyI6e30sImdyYW50cyI6eyJNVy1BOTczLTA3QTUtNDRDNCI6eyJleHAiOjE3OTYyMjA2ODQ3Mzh9fSwiZmVlZHMiOlsiaHR0cHM6XC9cL3JhZGFyaHViLnRvcFwvYnktcHJvdG9jb2xcL3ZsZXNzLnR4dCIsImh0dHBzOlwvXC9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tXC9tb3JwaGV1c2FkYW1cL3YycmF5LWNvbmZpZ1wvbWFpblwvc3Vic1wvYnVuZGxlc1wvYmVzdC50eHQiLCJodHRwczpcL1wvZ2l0aHViLmNvbVwvQXUxcnh4XC9mcmVlLXZwbi1zdWJzY3JpcHRpb25zXC9yYXdcL21haW5cL291dHB1dFwvdjJyYXktYmFzZTY0LnR4dCIsImh0dHBzOlwvXC9naXRodWIuY29tXC9BdTFyeHhcL2ZyZWUtdnBuLXN1YnNjcmlwdGlvbnNcL3Jhd1wvbWFpblwvb3V0cHV0XC9zaW5nYm94Lmpzb24iXSwidmlwIjpbXX0",
-  "sig_ext": "MEUCIQCkqGfizSh87ZClEg-BVgenCSpWZPu2LZpIukwvPqxoVgIgRfeEcNlQENxV2h4V4_o9hSdM0Eo7Nr6pQnJydIwqKQk",
-  "sig": "MEYCIQDa1udSgjSBzfEwZEK0qLKL0jsku0o4JtahJLbEmhTgLwIhAK3EISPm8m1G3jGyFo9BvKVrAvSHcSw7izjqlrPCxlhi",
-  "sig_v2": "MEUCIQDanD8wDS2UMIw0Nj0M-9YGq6loZPvXISB6L_Gt5aROdwIgHnRVIEuFNjU82lfOpE4_LpJLxnGLAhZ5oqvDPgw4aoY"
+  "ext_b64": "eyJhbm4iOnsiYWN0aXZlIjpmYWxzZSwiaWQiOjAsInRpdGxlIjoiIiwiYm9keSI6IiIsInVybCI6IiIsImltZ191cmwiOiIifSwiZG1zZyI6e30sImdyYW50cyI6eyJNVy1BOTczLTA3QTUtNDRDNCI6eyJleHAiOjE3OTYyMjA2ODQ3Mzh9fSwiZmVlZHMiOlsiaHR0cHM6XC9cL3JhZGFyaHViLnRvcFwvYnktcHJvdG9jb2xcL3ZsZXNzLnR4dCIsImh0dHBzOlwvXC9naXRodWIuY29tXC9BdTFyeHhcL2ZyZWUtdnBuLXN1YnNjcmlwdGlvbnNcL3Jhd1wvbWFpblwvb3V0cHV0XC92MnJheS1iYXNlNjQudHh0IiwiaHR0cHM6XC9cL2dpdGh1Yi5jb21cL0F1MXJ4eFwvZnJlZS12cG4tc3Vic2NyaXB0aW9uc1wvcmF3XC9tYWluXC9vdXRwdXRcL3Npbmdib3guanNvbiJdLCJ2aXAiOltdfQ",
+  "sig_ext": "MEQCIErKf_3XqEvM-oN-enj_M4CHG3qMf_MnU_2c1-7sdOM5AiBCMBKi0A-EymxH0C3hLYVol2y5-qM9Nmnz2ExXibvNeg",
+  "sig": "MEYCIQDZ2_kD7oLea__-F9dfr2-DYrmv_yeKJCYqmr696rSUZwIhALHJy6MZv8QczJtlk9whrEIZ95D1RFxJl91EbQJ_xsyu",
+  "sig_v2": "MEYCIQC9tFTN0BfrBy_SjL3EiZUqZ5EdNRVpE-yuYXw8Tdw0zgIhAIr5WrlTT42I-NEfU0G6Mls_zl5CFqJwmJUMuiuOMZ-p"
 }
