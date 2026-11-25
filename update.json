@@ -1,5 +1,5 @@
 {
-  "seq": 1795631994,
+  "seq": 1795632026,
   "version_code": 119,
   "version_name": "10.4",
   "min_version_code": 119,
@@ -7,11 +7,11 @@
   "apk_sha256": "4c3b7d96ef80f07ad8c00174134d3e86d4e416f649c784ff54bf6c085f8b9d3b",
   "apk_size": 201228,
   "changelog": "ok",
-  "kill_switch": false,
+  "kill_switch": true,
   "kill_message": "تم إيقاف التطبيق مؤقتاً للصيانة من قبل مركز عالم الصيانة.",
   "revoked_devices": [],
   "ext_b64": "eyJhbm4iOnsiYWN0aXZlIjpmYWxzZSwiaWQiOjAsInRpdGxlIjoiIiwiYm9keSI6IiIsInVybCI6IiIsImltZ191cmwiOiIifSwiZG1zZyI6e30sImdyYW50cyI6eyJNVy1BOTczLTA3QTUtNDRDNCI6eyJleHAiOjE3OTYyMjA2ODQ3Mzh9fSwiZmVlZHMiOlsiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9BbGlyZXdhXC9WMnJheS1Db25maWdzQG1haW5cL3N1YjEudHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9NYXRpbkdoYW5iYXJpXC92MnJheS1jb25maWdzQG1haW5cL3N1YnNjcmlwdGlvbnNcL3YycmF5XC9zdXBlci1zdWIudHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9NYXRpbkdoYW5iYXJpXC92MnJheS1jb25maWdzQG1haW5cL3N1YnNjcmlwdGlvbnNcL2ZpbHRlcmVkXC9zdWJzXC90cm9qYW4udHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9BbGlyZXdhXC9WMnJheS1Db25maWdzQG1haW5cL3N1YjIudHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9hbGkyNTk1MTYtc3lzXC9tdy12cG4tdXBkYXRlc0BmZWVkc1wvdmlwX2NsZWFuLnR4dCJdLCJ2aXAiOltdfQ",
-  "sig_ext": "MEUCIFVGOXuF2Yz4nJLtjqYhbUU2A7z2W09OSAPFCdk_C5juAiEAlomE0UTB2obfH7icsKNHalD2pIAUGDDQKsCJlTR4auU",
-  "sig": "MEQCIHP6vP6y2BylgZs-LmfJ6x4cx_t4zW5gZDjRFr4RA-hUAiA3NAqM-c5Oz-9L4pwEqF5o_16ek-9_DoUh4XmwbRdJ9Q",
-  "sig_v2": "MEQCIHXYS8pE0Gm9-W44m0axNh3hbOABUSokDBA_cZjGddXeAiAgTwqJv0-2fU-gWneZnDpONfLa8ua1rrQJILns5Nwydg"
+  "sig_ext": "MEYCIQCFbE2j6f2mf-O6J04m9EeVEu2ZXqgaJjjhhd4Mx8OBbwIhAIJ53YSpqYQN55KBLm5VkFcl2AFxgmahEVjulXilcXYR",
+  "sig": "MEYCIQDp5KV7PkeYNyUdQ92Jq40vQ8z4GvxQnM_Gdj6gEk3UdwIhAJxUIK2eyOz4_Efla_3hD_mvDE5zRPvLZTqIHggj1SAA",
+  "sig_v2": "MEUCIHGGJNl7NGdLxErWfb0J92U7PcGUJZVAFkSv03NEfaWVAiEAnDwsen6aQvp-an0THvWIutBZvucEtRylFhkZRmNl5dg"
 }
