@@ -1,15 +1,15 @@
 {
-  "seq": 1795597813,
-  "version_code": 102,
-  "version_name": "8.7",
-  "min_version_code": 102,
-  "apk_url": "https://cdn.jsdelivr.net/gh/ali259516-sys/mw-vpn-updates@b3bc628f5d8f8e04cb2accebcc6d4058edbc940b/releases/MaintenanceWorld_VPN_v8.7_Official.apk",
-  "apk_sha256": "01cbffcb9af39d013954ed2d12cf4d9f7b67d452ce302a971d4084af1be9613d",
+  "seq": 1795598400,
+  "version_code": 103,
+  "version_name": "8.8",
+  "min_version_code": 103,
+  "apk_url": "https://cdn.jsdelivr.net/gh/ali259516-sys/mw-vpn-updates@00d02120e9e06ef9ec707ef1487247cc28ca810c/releases/MaintenanceWorld_VPN_v8.8_Official.apk",
+  "apk_sha256": "8bd92f452369a71b1c7dc061c0360b137dd7bd7321a6e1d30e5794f2ef413d68",
   "apk_size": 172556,
-  "changelog": "ok",
+  "changelog": "تحسينات في السرعة والاستقرار والأمان.",
   "kill_switch": false,
   "kill_message": "تم إيقاف التطبيق مؤقتاً للصيانة من قبل مركز عالم الصيانة.",
   "revoked_devices": [],
-  "sig": "MEQCIBCIrpvCs3tjOQj_eZhzeT97sMRzF5gXj8EqauGozVi0AiAsCdgISN89U1pXd8flsR8AMXW6LPwwyAzrgHKXiGj6AQ",
-  "sig_v2": "MEQCIF9srGf5x123M1E9mi-OD-qAci_5RfEB4_flxAqcP30EAiAiutBLxIGxvuSIba-ubZ3Uq1kZE3xztq3UH6W1ebYCeg"
+  "sig": "MEUCIAbpgdCNghtmPzcDWoT3_2gf_KxUGowVLL4KHXhD2ErPAiEAn7yo593tfit4lR6bYx69QNTiActSAQbqh7CVIl8RR2g",
+  "sig_v2": "MEQCIGiakKH_a3-DmG1QcFipSe6T_ryU6d9poT9qxESTSYg4AiAlT7U4apnBG4BSfULF4zvJHXWsB30WsMBxOIbuYfVJjQ"
 }
