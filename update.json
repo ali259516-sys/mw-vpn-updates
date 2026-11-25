@@ -1,5 +1,5 @@
 {
-  "seq": 1795615572,
+  "seq": 1795615673,
   "version_code": 109,
   "version_name": "9.4",
   "min_version_code": 109,
@@ -7,11 +7,11 @@
   "apk_sha256": "b5378b4166a36d451a5117c564dd141caf5da63f12119eaa17c95c15c7d94bf1",
   "apk_size": 193036,
   "changelog": "ok",
-  "kill_switch": false,
+  "kill_switch": true,
   "kill_message": "تم إيقاف التطبيق مؤقتاً للصيانة من قبل مركز عالم الصيانة.",
   "revoked_devices": [],
   "ext_b64": "eyJhbm4iOnsiYWN0aXZlIjp0cnVlLCJpZCI6MTc5NTYxMjg1OCwidGl0bGUiOiLYqNit2KjZgyIsImJvZHkiOiIiLCJ1cmwiOiIiLCJpbWdfdXJsIjoiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9hbGkyNTk1MTYtc3lzXC9tdy12cG4tdXBkYXRlc0A5NGE2MGExZWYwNGVmYWMxZDFhMzU2MDRiYTlmOGMxMjc5OWVhYTZmXC9hbm5fYXNzZXRzXC9hbm5fMTc5NTYxMjg1NC5qcGcifX0",
-  "sig_ext": "MEUCIEsTJhxl4rIX8oAet4gaCDBU1fQs1hiZ0dmeZH0twfHIAiEAm0OTN3g0_oILZurejl4FK4SQp_9mpPlIYaOtsb2MzeM",
-  "sig": "MEQCIEBQsT4_e8fOyZxYYsubnn5UzYM-1gtxcjkjJn_az7CpAiAE3yHrRqGKyjW3R2vjbklSqjDptIbhluSYCgCg8fuIVA",
-  "sig_v2": "MEUCIQD8PKOY9LqKuab5-s9_idHj6IwQPLsdxjmFWZuHQzuQsQIgaiWHX9wxENp9XlYjm3MNKd4f9IjUeZaM-G2CkMkEL_A"
+  "sig_ext": "MEYCIQC5FwGR3h1sHAZB3VWJW6jenvYVSMdo1DUdaHCuanXWVAIhANXPq90X_OvazI2pQaJmCXPt4qg1HfNk0CmyLTPXDAPt",
+  "sig": "MEQCICxE_L98MNZXp_w3Az_ILKVbelFMMx8Jl249apjIQJxiAiAaHUJwY0oBk8kfvu0bRKmEGKL4LIyVCoE5GmFgw35hMQ",
+  "sig_v2": "MEQCIGHS5HPQyM9JMTRzPu7jQftjSnq2EZwGIZDEXunjr-bwAiAH66ceFPSTM4mj-XYaNi65EdwX_nk8lGpTUzSrw-Z9KQ"
 }
