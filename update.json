@@ -1,5 +1,5 @@
 {
-  "seq": 1795598905,
+  "seq": 1795598906,
   "version_code": 104,
   "version_name": "8.9",
   "min_version_code": 104,
@@ -7,9 +7,9 @@
   "apk_sha256": "2a7129ed538ba7a9666dbcc3397d3314cb50dac3b8eb2a7ff8c1a16e3cb76d09",
   "apk_size": 176652,
   "changelog": "ok",
-  "kill_switch": true,
+  "kill_switch": false,
   "kill_message": "تم إيقاف التطبيق مؤقتاً للصيانة من قبل مركز عالم الصيانة.",
   "revoked_devices": [],
-  "sig": "MEYCIQC5_zIHkXADafyJU2zWQMLk_njd8C2rJOYYKrWdFV2CBQIhAIua6tprpzR2WuA2A3cwOa1yVYJ-Ciohvh0IbtZR3uss",
-  "sig_v2": "MEQCIAH59JOvxvLnq4ZkK_Fl3Dt8Sueya4yIIs-_otkndRxBAiAuhds5RKTQ-gwwYpFR0kTh0efavrvKsSmU98rQ--62ew"
+  "sig": "MEQCIE87-p5GivjxmYuIkDYaTxReXFX6DIe7D-bImGOk6myNAiAQ_GVgVFNwaTY0qHshraKHwkyHgeEH8x_MywAxK4ViDg",
+  "sig_v2": "MEUCIQCWEGhKmMmTm1gp6Ze6mdSq8oSvukjVm59HwnpiG1RZHQIgal-6HdQ3nXXrSYgXOOxTo0rHU-icB9EoES2qV2co-w8"
 }
