@@ -1,5 +1,5 @@
 {
-  "seq": 1795597812,
+  "seq": 1795597813,
   "version_code": 102,
   "version_name": "8.7",
   "min_version_code": 102,
@@ -10,6 +10,6 @@
   "kill_switch": false,
   "kill_message": "تم إيقاف التطبيق مؤقتاً للصيانة من قبل مركز عالم الصيانة.",
   "revoked_devices": [],
-  "sig": "MEYCIQDTSz8mAoH3sm9q62LNvbla8P0TQoEZBLcC8MTljsJkYgIhAMu_xfqkZ2wkaXKFUZBEJpD95Zh07gmpXZ_qnUlsEW0o",
-  "sig_v2": "MEUCICH1C9RZg9nk64zUz6Bz6iHuja-YbycJIqOXfGQ-SsqaAiEAsdeY5TzEGM_chudSxOZuMuT6HkJIcr7Z8ZaogOgvapk"
+  "sig": "MEQCIBCIrpvCs3tjOQj_eZhzeT97sMRzF5gXj8EqauGozVi0AiAsCdgISN89U1pXd8flsR8AMXW6LPwwyAzrgHKXiGj6AQ",
+  "sig_v2": "MEQCIF9srGf5x123M1E9mi-OD-qAci_5RfEB4_flxAqcP30EAiAiutBLxIGxvuSIba-ubZ3Uq1kZE3xztq3UH6W1ebYCeg"
 }
