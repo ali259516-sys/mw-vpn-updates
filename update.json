@@ -1,5 +1,5 @@
 {
-  "seq": 1795617371,
+  "seq": 1795617393,
   "version_code": 110,
   "version_name": "9.5",
   "min_version_code": 110,
@@ -10,8 +10,8 @@
   "kill_switch": false,
   "kill_message": "تم إيقاف التطبيق مؤقتاً للصيانة من قبل مركز عالم الصيانة.",
   "revoked_devices": [],
-  "ext_b64": "eyJhbm4iOnsiYWN0aXZlIjpmYWxzZSwiaWQiOjAsInRpdGxlIjoiIiwiYm9keSI6IiIsInVybCI6IiIsImltZ191cmwiOiIifSwiZG1zZyI6e30sImdyYW50cyI6eyJNVy1BOTczLTA3QTUtNDRDNCI6eyJleHAiOjE3OTYyMjA2ODQ3Mzh9fSwiZmVlZHMiOlsiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9zYWtoYTEzNzBcL09wZW5SYXlAbWFpblwvb3V0cHV0XC9zaXRlX2FjY2Vzc1wvYWlzdHVkaW8udHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9NYXRpbkdoYW5iYXJpXC92MnJheS1jb25maWdzQG1haW5cL3N1YnNjcmlwdGlvbnNcL3YycmF5XC9zdXBlci1zdWIudHh0Il19",
-  "sig_ext": "MEUCIG3J6pPj9vgNgAJewd7yEdhmUhNx9qcrFLDsVMEsl3R8AiEAwwnGatICZIsmVwNR3neCAuFtERBAjkuQPBFETMv-eYk",
-  "sig": "MEYCIQDvbYngSGKb_mJDXv15MxpMSzlBlCjF0vsfplP8Tzy3mwIhAP6q_Xh8Lc9x2O0CJ7yiaM3JSF3d0f6LpgpQL-HCh8-5",
-  "sig_v2": "MEMCHxiSf079hwj6YnLAXMBeN63oUMikLt5N4Nk4xrz7CwACIF7o-15wmYwQEu0XZd6-gPZZ4QtblJe_vu0MHKosxD9v"
+  "ext_b64": "eyJhbm4iOnsiYWN0aXZlIjpmYWxzZSwiaWQiOjAsInRpdGxlIjoiIiwiYm9keSI6IiIsInVybCI6IiIsImltZ191cmwiOiIifSwiZG1zZyI6e30sImdyYW50cyI6eyJNVy1BOTczLTA3QTUtNDRDNCI6eyJleHAiOjE3OTYyMjA2ODQ3Mzh9fSwiZmVlZHMiOlsiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9zYWtoYTEzNzBcL09wZW5SYXlAbWFpblwvb3V0cHV0XC9zaXRlX2FjY2Vzc1wvYWlzdHVkaW8udHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9NYXRpbkdoYW5iYXJpXC92MnJheS1jb25maWdzQG1haW5cL3N1YnNjcmlwdGlvbnNcL3YycmF5XC9zdXBlci1zdWIudHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9NYXRpbkdoYW5iYXJpXC92MnJheS1jb25maWdzQG1haW5cL3N1YnNjcmlwdGlvbnNcL2ZpbHRlcmVkXC9zdWJzXC90cm9qYW4udHh0Il19",
+  "sig_ext": "MEQCIEeu2r8ZAxH_HnkAZClY0icANbuCHsFGQmCC8TseKfemAiBk9k1wm6v8ZJ-luWpehOhdLI-aJkIzKHd-uc0stiWquQ",
+  "sig": "MEQCIDYd46vvXVUrOTeXat_F2YnzgWje52BXyAtzL-RpaARhAiA8-mzY6RsSRb-gaIUc16-0GlNd_HF6lqLhOTQaNTeUXg",
+  "sig_v2": "MEUCIAg1rH6BTO4XkOzTYoCt7HQe7O6N_3M3b2ZKIQFkqFksAiEAsZ7Uxw8ihCH3vz6m9Z6G6g5btQYGpq7emd_j1dFdxxk"
 }
