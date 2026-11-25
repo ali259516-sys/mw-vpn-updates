@@ -1,5 +1,5 @@
 {
-  "seq": 1795625969,
+  "seq": 1795626311,
   "version_code": 114,
   "version_name": "9.9",
   "min_version_code": 114,
@@ -10,8 +10,8 @@
   "kill_switch": false,
   "kill_message": "تم إيقاف التطبيق مؤقتاً للصيانة من قبل مركز عالم الصيانة.",
   "revoked_devices": [],
-  "ext_b64": "eyJhbm4iOnsiYWN0aXZlIjpmYWxzZSwiaWQiOjAsInRpdGxlIjoiIiwiYm9keSI6IiIsInVybCI6IiIsImltZ191cmwiOiIifSwiZG1zZyI6e30sImdyYW50cyI6eyJNVy1BOTczLTA3QTUtNDRDNCI6eyJleHAiOjE3OTYyMjA2ODQ3Mzh9fSwiZmVlZHMiOltdLCJ2aXAiOltdfQ",
-  "sig_ext": "MEUCIHtzxtiQ_xUkWPz7_ts-KX5Ji6ItIrJyDMDGKN_eMrdEAiEA-lFuJ-ktTtGD7A5iHY2E-Qdtw_-d_92YS0sIZdydmvs",
-  "sig": "MEQCIAwokCQ2iq_PXSPh6H9QsEZALyOcbW19t7cgSiXpP0WRAiAo7XDDZaPoZdp6j384Ch4Vq4f5xeTxibNhde3_kxoUGA",
-  "sig_v2": "MEUCIGx6X2W6IlzRi8pKqgNpSSsNy70Dsde_gUA6YjN-aOMNAiEA2tHCORfoQlATPqmdS1ynMs2_LK-d9xaxtwSGa1YMrsM"
+  "ext_b64": "eyJhbm4iOnsiYWN0aXZlIjpmYWxzZSwiaWQiOjAsInRpdGxlIjoiIiwiYm9keSI6IiIsInVybCI6IiIsImltZ191cmwiOiIifSwiZG1zZyI6e30sImdyYW50cyI6eyJNVy1BOTczLTA3QTUtNDRDNCI6eyJleHAiOjE3OTYyMjA2ODQ3Mzh9fSwiZmVlZHMiOlsiaHR0cHM6XC9cL3JhZGFyaHViLnRvcFwvYnktcHJvdG9jb2xcL3ZsZXNzLnR4dCJdLCJ2aXAiOltdfQ",
+  "sig_ext": "MEYCIQDE0h61BiXsS7Kj66SjTzBJOcCKIkbQCt3_Q-AGDmutgAIhAJDnZo7ClnfrK3CCdnynxkHbKu5PrTTXCz9pmG6eteM4",
+  "sig": "MEQCIAWtduGhDzyobQvWe8tp19YEcTnCc7f-H4QDVb-KCSmRAiA3lIhtglzjAM7MYAGPs1a-i8PlKHI4ptorkEad5N99fQ",
+  "sig_v2": "MEYCIQCtDSN_fM_rfQRGJK8WVk2sw3ryRoW4lL1sdh3S8K31LgIhALs7NJs1ebB2AlTZbMNARLVtz8JfuOB5syl2PKw_vwAK"
 }
