@@ -1,5 +1,5 @@
 {
-  "seq": 1795597327,
+  "seq": 1795597328,
   "version_code": 101,
   "version_name": "8.6",
   "min_version_code": 101,
@@ -7,9 +7,9 @@
   "apk_sha256": "679773b767e1f0be9ee89fd6c9d1100ac3d964463218f8c9412b53a14218c03b",
   "apk_size": 172556,
   "changelog": "تحسينات في السرعة والاستقرار والأمان.",
-  "kill_switch": false,
+  "kill_switch": true,
   "kill_message": "تم إيقاف التطبيق مؤقتاً للصيانة من قبل مركز عالم الصيانة.",
   "revoked_devices": [],
-  "sig": "MEQCICivvDoYGlp5TxR-TVx1Dv800ItGAmsUxpTbE3g32HNLAiBDPu9Cji4qDDNiTmlwkWsRT9D00EeRrnMmg7zRYO-pXg",
-  "sig_v2": "MEUCIQCLLMqMv8W7wEwP277UQBmpwFD3j9OPKdnU6dQMwqnGtwIgb8p-vXRpKWmUYpyEHUyR98kXAw2GrVXTQKeITxZVELg"
+  "sig": "MEQCIH_MG-ms9ezDx2ltUSyx6zp9jhzkJNavVhiwqM4Knsl-AiBHePlPBYS97TGojt_67MRBb5n1_0b2Nbz0XLXjf3VT-A",
+  "sig_v2": "MEUCIQC01P9ufxBZmInuEVQtiBSMOomYDNhRfUvxYOw4piYo1AIgTuylHOkAJDFbhXjBKXj971I7sjeDVo4zbku80zXQ3qE"
 }
