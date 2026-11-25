@@ -1,17 +1,17 @@
 {
-  "seq": 1795626544,
-  "version_code": 114,
-  "version_name": "9.9",
-  "min_version_code": 114,
-  "apk_url": "https://cdn.jsdelivr.net/gh/ali259516-sys/mw-vpn-updates@33991e6a910e0fa4d58710fe59f09d861a944334/releases/MaintenanceWorld_VPN_v9.9_Official.apk",
-  "apk_sha256": "98334ab8dd10198657ad626569d5c4580ea3b08c695f0d4d635104d1c8a826ed",
+  "seq": 1795627559,
+  "version_code": 115,
+  "version_name": "10.0",
+  "min_version_code": 115,
+  "apk_url": "https://cdn.jsdelivr.net/gh/ali259516-sys/mw-vpn-updates@0f740a0fec5f643fee0199ca0f794d8978221c73/releases/MaintenanceWorld_VPN_v10.0_Official.apk",
+  "apk_sha256": "2fb48f8ec607d3be860a1b5c1891152b0687418984d5d30d2857311a791ab56e",
   "apk_size": 197132,
   "changelog": "ok",
   "kill_switch": false,
   "kill_message": "تم إيقاف التطبيق مؤقتاً للصيانة من قبل مركز عالم الصيانة.",
   "revoked_devices": [],
   "ext_b64": "eyJhbm4iOnsiYWN0aXZlIjpmYWxzZSwiaWQiOjAsInRpdGxlIjoiIiwiYm9keSI6IiIsInVybCI6IiIsImltZ191cmwiOiIifSwiZG1zZyI6e30sImdyYW50cyI6eyJNVy1BOTczLTA3QTUtNDRDNCI6eyJleHAiOjE3OTYyMjA2ODQ3Mzh9fSwiZmVlZHMiOlsiaHR0cHM6XC9cL2dpdGh1Yi5jb21cL0F1MXJ4eFwvZnJlZS12cG4tc3Vic2NyaXB0aW9uc1wvcmF3XC9tYWluXC9vdXRwdXRcL3YycmF5LWJhc2U2NC50eHQiLCJodHRwczpcL1wvZ2l0aHViLmNvbVwvQXUxcnh4XC9mcmVlLXZwbi1zdWJzY3JpcHRpb25zXC9yYXdcL21haW5cL291dHB1dFwvc2luZ2JveC5qc29uIl0sInZpcCI6W119",
-  "sig_ext": "MEQCIBQhOSyvUecEeGgjEB8a7cZMX3kWGNe5VsmPIf5Dd7hhAiAE42GNEIVy12GQcmn7RAFCEsiLVX3Urxz_SrvLeWhk3A",
-  "sig": "MEUCIQDFfO_DGscTPwqAAEE_sZFE5rLArKnwn6MWDfEv6v9BUQIgXWk5jL2O3tfJ1H3_OHzK_IXH9cdHLiE2lQgdqJFJZaE",
-  "sig_v2": "MEUCIAPjY7C3JTZvxVYpHMxuOQEsx6OpKZbM6MNIvZ5r49zcAiEAmH_p4Qa8FIDKr9EPht8fU-l4kDARLTo_lg87up1iiG4"
+  "sig_ext": "MEQCIGVFq_bxx0cajat89-18rUmSGdLbKlijG4HLNoDjomJjAiAYeT8fXwmPQ80emIyUtQkNBU2zyv-PvdHKmovRvMTMUw",
+  "sig": "MEYCIQDMBSJIG73XBlKi2EjRrRZtY1hJnj2jhNy3b1byPenGzAIhAPgBGfHEtkZp8Zh2uJiwizXWVDPMUAGQold0yWd7DCvh",
+  "sig_v2": "MEUCIQCtW0-xNYQbuZIMUYFZ4OAiZru1YpPsdsm_uWFYTDUbagIgWQdKIEXMpKBC0bBuPRkfDYGPvFs3tkjqobnDqFqyMOo"
 }
