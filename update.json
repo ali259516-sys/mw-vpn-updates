@@ -1,5 +1,5 @@
 {
-  "seq": 1795598907,
+  "seq": 1795598908,
   "version_code": 104,
   "version_name": "8.9",
   "min_version_code": 104,
@@ -7,9 +7,9 @@
   "apk_sha256": "2a7129ed538ba7a9666dbcc3397d3314cb50dac3b8eb2a7ff8c1a16e3cb76d09",
   "apk_size": 176652,
   "changelog": "ok",
-  "kill_switch": true,
+  "kill_switch": false,
   "kill_message": "بحبك",
   "revoked_devices": [],
-  "sig": "MEUCIHLn479dEPrpWfXAwPVfdoM-0-Fig3quCCkrwc5ImdsFAiEAzJUpOgOMnsE3ClfwH4gPpSz4UIR3S_vYQjT_rS5RmBk",
-  "sig_v2": "MEUCIQCEzRepofgj5j6e-moomxNx_X-sojICdGLKS2Hyn9rjyQIgJpBvC7lZE0W5ssn_EU252j8amEJ-BcxT9HiNAMfxJVI"
+  "sig": "MEYCIQCxz_PwLdncmnrhbe-2XpjJNHVOF1v57wSuv0jWheaqfgIhAPSkjffHypQjFiItf0h3LR7hLvc39NdT3Jo_hRkQ7crs",
+  "sig_v2": "MEUCIQDziBZD1-qvnUUYzV8BVO4v8P4wvrN4x4GY8-Iyo6_9WQIgDpNeg-wJFN5erkr8A5qazT2seuao7IBFpTzlWTpFCh8"
 }
