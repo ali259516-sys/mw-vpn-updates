@@ -1,17 +1,17 @@
 {
-  "seq": 1795624919,
-  "version_code": 110,
-  "version_name": "9.5",
-  "min_version_code": 110,
-  "apk_url": "https://cdn.jsdelivr.net/gh/ali259516-sys/mw-vpn-updates@e371064ff25b4567b01ac1a808ed6f6ebbee7d23/releases/MaintenanceWorld_VPN_v9.5_Official.apk",
-  "apk_sha256": "fcdcb36d22b747322a3bfcb0e962348c7e08e513fddd29f396ec6c2efa6f70a6",
+  "seq": 1795625209,
+  "version_code": 112,
+  "version_name": "9.7",
+  "min_version_code": 112,
+  "apk_url": "https://cdn.jsdelivr.net/gh/ali259516-sys/mw-vpn-updates@2156dd893b623d044e8b9eb3f9ed3e438f9c6ad9/releases/MaintenanceWorld_VPN_v9.7_Official.apk",
+  "apk_sha256": "1cb38613ea5f117c083ec64525ed55c6591dcf12c397f745749ed9aa4871a2ca",
   "apk_size": 193036,
   "changelog": "ok",
   "kill_switch": false,
   "kill_message": "تم إيقاف التطبيق مؤقتاً للصيانة من قبل مركز عالم الصيانة.",
   "revoked_devices": [],
   "ext_b64": "eyJhbm4iOnsiYWN0aXZlIjpmYWxzZSwiaWQiOjAsInRpdGxlIjoiIiwiYm9keSI6IiIsInVybCI6IiIsImltZ191cmwiOiIifSwiZG1zZyI6e30sImdyYW50cyI6eyJNVy1BOTczLTA3QTUtNDRDNCI6eyJleHAiOjE3OTYyMjA2ODQ3Mzh9fSwiZmVlZHMiOlsiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9zYWtoYTEzNzBcL09wZW5SYXlAbWFpblwvb3V0cHV0XC9zaXRlX2FjY2Vzc1wvYWlzdHVkaW8udHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9NYXRpbkdoYW5iYXJpXC92MnJheS1jb25maWdzQG1haW5cL3N1YnNjcmlwdGlvbnNcL3YycmF5XC9zdXBlci1zdWIudHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9NYXRpbkdoYW5iYXJpXC92MnJheS1jb25maWdzQG1haW5cL3N1YnNjcmlwdGlvbnNcL2ZpbHRlcmVkXC9zdWJzXC90cm9qYW4udHh0Il0sInZpcCI6W119",
-  "sig_ext": "MEYCIQDWJxtNB0tB1k-74mbDpPXLaGhIwpf8k4KlN1KL0OyJCQIhANhGfoo-KG7lMk1XLJnncHI00wuj5d1tlNkZYXV71kpU",
-  "sig": "MEUCIGVS2ISZReMtBSBwsmq8I8n1TQFEu8pGxtaaX7pktQqzAiEA2mnkSeIqkmtp5ps_RqhJKGrf3fhpk2iQH0Y_P9jJrQ4",
-  "sig_v2": "MEUCIEgPGL_0CXPWgxf3GwOP9EZWP3qHYTpaMP_swVqOGaEpAiEA5q37taW7NV1-kgKjGgf-c22uYcEX3uXOtc3a07QpB8s"
+  "sig_ext": "MEUCIQD-H4nKn_JVwgkFLpb8h7ysl4lPp8WQRTOviqVV9NND8AIgcnlgOXLvpMcXlMGrWfulpp3uyG6JcpJD_4nmv_8iV_Y",
+  "sig": "MEUCIC6TUHkupv03RFBBVj4_eCvOX0YMfrwFyXZTypC80UOxAiEAvICjwJlQfibpO8H7goYtPo2p0B0tQVgXa759MAyKSw8",
+  "sig_v2": "MEQCIACLtcZM8Rp4r0wJyt696DNexddM2yk5NgXbpiI90f6rAiAnSFZxwr4lUdby26BY8g7sfKys7Tcf7sHeP6cjTXAqyA"
 }
