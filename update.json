@@ -1,17 +1,17 @@
 {
-  "seq": 1795653565,
-  "version_code": 125,
-  "version_name": "10.8",
-  "min_version_code": 125,
-  "apk_url": "https://cdn.jsdelivr.net/gh/ali259516-sys/mw-vpn-updates@30b577cd0b697fe691cc6c67bcf3e6375b56acb8/releases/MaintenanceWorld_VPN_v10.8_Official.apk",
-  "apk_sha256": "5f65ee030641c7e49b148213f5b7aac362c04feab48fb389450baa6c4517b442",
+  "seq": 1795653892,
+  "version_code": 126,
+  "version_name": "10.9",
+  "min_version_code": 126,
+  "apk_url": "https://cdn.jsdelivr.net/gh/ali259516-sys/mw-vpn-updates@e590f119f551891dab3e8a4100ee285fbb823eae/releases/MaintenanceWorld_VPN_v10.9_Official.apk",
+  "apk_sha256": "63f5d7e9e45fa23821645347b1039fb8249bcec7e410bed8fe00eae2874a4851",
   "apk_size": 209420,
   "changelog": "ok",
   "kill_switch": false,
   "kill_message": "تم إيقاف التطبيق مؤقتاً للصيانة من قبل مركز عالم الصيانة.",
   "revoked_devices": [],
   "ext_b64": "eyJhbm4iOnsiYWN0aXZlIjpmYWxzZSwiaWQiOjAsInRpdGxlIjoiIiwiYm9keSI6IiIsInVybCI6IiIsImltZ191cmwiOiIifSwiZG1zZyI6e30sImdyYW50cyI6eyJNVy1BOTczLTA3QTUtNDRDNCI6eyJleHAiOjE3OTYyMjA2ODQ3Mzh9fSwiZmVlZHMiOlsiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9BbGlyZXdhXC9WMnJheS1Db25maWdzQG1haW5cL3N1YjEudHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9NYXRpbkdoYW5iYXJpXC92MnJheS1jb25maWdzQG1haW5cL3N1YnNjcmlwdGlvbnNcL3YycmF5XC9zdXBlci1zdWIudHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9NYXRpbkdoYW5iYXJpXC92MnJheS1jb25maWdzQG1haW5cL3N1YnNjcmlwdGlvbnNcL2ZpbHRlcmVkXC9zdWJzXC90cm9qYW4udHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9BbGlyZXdhXC9WMnJheS1Db25maWdzQG1haW5cL3N1YjIudHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9hbGkyNTk1MTYtc3lzXC9tdy12cG4tdXBkYXRlc0BmZWVkc1wvdmlwX2NsZWFuLnR4dCJdLCJ2aXAiOltdfQ",
-  "sig_ext": "MEYCIQCd4TuEFg7x0sH2mtjm-MQ2FhK_unRR7EK_Ppfpe89pqwIhAMVLt4f6j-vzI8Vki5uEXB5oGbGs86UlKhuEmk-WwWml",
-  "sig": "MEYCIQC7fxut--hBUOrFvUb8jl5aSPJS44aQC8hpikAyqZ5MUQIhAN9QSyPka7JwR2j0CUwLZPCEdMtHjeLdD7RPejS_T2Lm",
-  "sig_v2": "MEUCIDdN_H15fVCp5oWhtS8S0hyL6dm5NAJ4dHq6gZO735L0AiEA3aqr3IjRPxJZVRuBL82VIqCZKshAl-YUTzUR1qDrb8M"
+  "sig_ext": "MEYCIQCK6ATJ8o2yLJuYLyGz4IxbosTOz-aSC2QUBYndWl1HuQIhAPTxVGTM-1C8yaWNwRmvpL5bRaRRIl6hQGYFoWOb2Fyw",
+  "sig": "MEQCIHh3iKH7fHT2MRASPCXj-AalDc1O_favDlnigvqXHII6AiAKelZhzMHXkPmGjFvE9iqYA7IQrJEq5cvGJlJFCa-w2Q",
+  "sig_v2": "MEYCIQDiHPErAMzp8TgieQMUkOrOEN4S7FSZ7HNcLRv4oh8djAIhAPTKvmoI62G9KxfxdufKADdi7ljIHxwIz9ojdas3Hc7Y"
 }
