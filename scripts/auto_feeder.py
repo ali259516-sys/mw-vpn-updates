@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-MaintenanceWorld VPN — Cloud Auto Feeder v2.0
-Fetches top verified dynamic feeds, filters strictly for MW_VPN v1.0.0 compatibility
+MaintenanceWorld VPN — Cloud Auto Feeder v2.1 (Round-Robin)
+Fetches top live verified dynamic feeds, filters strictly for MW_VPN v1.0.0 compatibility
 (AEAD Shadowsocks, Trojan TLS, VLESS TLS non-vision, VMess AEAD aid=0),
+interleaves candidates fairly via Round-Robin across all sources,
 performs real TCP + Strict CA TLS + WS/HTTPUpgrade 101 verification,
 and outputs clean vip_clean.txt & stats.txt for the isolated `feeds` branch.
 """
@@ -33,15 +34,12 @@ FEEDS = [
     ("Radikal-Top",  "https://cdn.jsdelivr.net/gh/0xRadikal/Free-v2ray-Configs@main/top100.txt", 120),
     ("Radikal-Ver",  "https://cdn.jsdelivr.net/gh/0xRadikal/Free-v2ray-Configs@main/verified/configs_base64.txt", 180),
     ("Au1rxx-Ver",   "https://cdn.jsdelivr.net/gh/Au1rxx/free-vpn-subscriptions@main/output/all-verified/v2ray-base64-0001.txt", 180),
-    ("Au1rxx-AE",    "https://cdn.jsdelivr.net/gh/Au1rxx/free-vpn-subscriptions@main/output/by-country/v2ray-base64-AE.txt", 100),
     # Tier 3: Fast high-frequency protocol splits & RadarHub
     ("Matin-SS",     "https://cdn.jsdelivr.net/gh/MatinGhanbari/v2ray-configs@main/subscriptions/filtered/subs/ss.txt", 140),
     ("Matin-Troj",   "https://cdn.jsdelivr.net/gh/MatinGhanbari/v2ray-configs@main/subscriptions/filtered/subs/trojan.txt", 120),
     ("Matin-VMess",  "https://cdn.jsdelivr.net/gh/MatinGhanbari/v2ray-configs@main/subscriptions/filtered/subs/vmess.txt", 120),
-    ("CFY-SS",       "https://cdn.jsdelivr.net/gh/mohammadaz2/v2rayConfigsForYou@main/sub/ss.txt", 120),
     ("CFY-Troj",     "https://cdn.jsdelivr.net/gh/mohammadaz2/v2rayConfigsForYou@main/sub/trojan.txt", 100),
     ("CFY-VMess",    "https://cdn.jsdelivr.net/gh/mohammadaz2/v2rayConfigsForYou@main/sub/vmess.txt", 100),
-    ("Fast-US",      "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/countries/US.txt", 120),
     ("Fast-AE",      "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/countries/AE.txt", 100),
     ("Fast-Ver",     "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/verified.txt", 140),
     ("Radar-SS",     "https://radarhub.top/by-protocol/shadowsocks.txt", 120),
@@ -58,6 +56,7 @@ ALLOWED_SS_CIPHERS = {
 
 IPV4_RE = re.compile(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
 UUID_HEX_RE = re.compile(r"^[0-9a-fA-F]{32}$")
+MAX_VERIFY_CANDIDATES = 1200
 MAX_FINAL_NODES = 280
 MAX_PER_HOST = 2
 
@@ -314,7 +313,7 @@ def fetch_feed(feed_tuple):
         req = urllib.request.Request(
             url,
             headers={
-                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) MaintenanceWorldVPN-Feeder/2.0",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) MaintenanceWorldVPN-Feeder/2.1",
                 "Accept-Encoding": "identity",
             },
         )
@@ -399,28 +398,37 @@ def verify_node_strict(node: dict):
 def main() -> int:
     t_start = time.monotonic()
     feed_stats = []
-    candidates = []
+    per_feed_unique = []
     seen_keys = set()
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=12) as ex:
         for name, items in ex.map(fetch_feed, FEEDS):
-            added = 0
+            uniq_list = []
             for item in items:
                 key = (item["proto"], item["host"].lower(), item["port"], item["sni"].lower(), item["ws_path"])
                 if key not in seen_keys:
                     seen_keys.add(key)
-                    candidates.append(item)
-                    added += 1
-            feed_stats.append((name, len(items), added))
+                    uniq_list.append(item)
+            if uniq_list:
+                per_feed_unique.append(uniq_list)
+            feed_stats.append((name, len(items), len(uniq_list)))
 
-    print(f"[INFO] Fetched {len(candidates)} unique MW_VPN-compatible candidates from {len(FEEDS)} feeds.")
+    # Fair Round-Robin interleaving so late sources (RadarHub, FastNodes, Matin) are never truncated
+    candidates = []
+    max_bucket_len = max((len(lst) for lst in per_feed_unique), default=0)
+    for idx in range(max_bucket_len):
+        for lst in per_feed_unique:
+            if idx < len(lst):
+                candidates.append(lst[idx])
+                if len(candidates) >= MAX_VERIFY_CANDIDATES:
+                    break
+        if len(candidates) >= MAX_VERIFY_CANDIDATES:
+            break
+
+    print(f"[INFO] Round-Robin selected {len(candidates)} unique MW_VPN-compatible candidates from {len(FEEDS)} feeds.")
     if not candidates:
         print("[WARN] No compatible candidates fetched.")
         return 0
-
-    # Cap total verify load so Actions finishes quickly (<2 min)
-    if len(candidates) > 1200:
-        candidates = candidates[:1200]
 
     verified = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=64) as ex:
@@ -428,7 +436,6 @@ def main() -> int:
             if res is not None:
                 verified.append(res)
 
-    # Sort: prefer direct-VPS/SS/Trojan & lowest RTT
     proto_priority = {
         "SS-AEAD": 0,
         "TROJAN-TLS": 1,
@@ -438,7 +445,6 @@ def main() -> int:
     }
     verified.sort(key=lambda x: (x["rtt"] + proto_priority.get(x["proto"], 4) * 25, x["rtt"]))
 
-    # Enforce per-host cap so final pool stays diverse
     final_nodes = []
     host_counts = {}
     proto_counts = {}
@@ -467,7 +473,7 @@ def main() -> int:
 
     lines = [
         "==========================================================",
-        "MaintenanceWorld VPN — Verified Cloud Feed Stats (v2.0)",
+        "MaintenanceWorld VPN — Verified Cloud Feed Stats (v2.1 Round-Robin)",
         f"Updated: {now_utc} | Scan Duration: {elapsed}s",
         f"Total Candidates: {len(candidates)} | Strict Verified: {len(verified)} | Published: {len(final_nodes)}",
         f"RTT (Runner): min={min(rtts)}ms | avg={avg_rtt}ms | max={max(rtts)}ms",
