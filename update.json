@@ -1,5 +1,5 @@
 {
-  "seq": 1795665513,
+  "seq": 1795665551,
   "version_code": 134,
   "version_name": "10.17",
   "min_version_code": 134,
@@ -7,11 +7,11 @@
   "apk_sha256": "279ec7cb1aaa92575f94bb32544dd36511c8328ebc0c481f04c8381ed88e8ed3",
   "apk_size": 221708,
   "changelog": "ok",
-  "kill_switch": true,
+  "kill_switch": false,
   "kill_message": "تم إيقاف التطبيق مؤقتاً للصيانة من قبل مركز عالم الصيانة.",
   "revoked_devices": [],
   "ext_b64": "eyJhbm4iOnsiYWN0aXZlIjpmYWxzZSwiaWQiOjAsInRpdGxlIjoiIiwiYm9keSI6IiIsInVybCI6IiIsImltZ191cmwiOiIifSwiZG1zZyI6e30sImdyYW50cyI6eyJNVy1BOTczLTA3QTUtNDRDNCI6eyJleHAiOjE3OTYyNjE4OTU5NTB9fSwiZmVlZHMiOlsiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9BbGlyZXdhXC9WMnJheS1Db25maWdzQG1haW5cL3N1YjEudHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9NYXRpbkdoYW5iYXJpXC92MnJheS1jb25maWdzQG1haW5cL3N1YnNjcmlwdGlvbnNcL3YycmF5XC9zdXBlci1zdWIudHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9NYXRpbkdoYW5iYXJpXC92MnJheS1jb25maWdzQG1haW5cL3N1YnNjcmlwdGlvbnNcL2ZpbHRlcmVkXC9zdWJzXC90cm9qYW4udHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9BbGlyZXdhXC9WMnJheS1Db25maWdzQG1haW5cL3N1YjIudHh0IiwiaHR0cHM6XC9cL2Nkbi5qc2RlbGl2ci5uZXRcL2doXC9hbGkyNTk1MTYtc3lzXC9tdy12cG4tdXBkYXRlc0BmZWVkc1wvdmlwX2NsZWFuLnR4dCJdLCJ2aXAiOlsic3M6XC9cL1lXVnpMVEkxTmkxblkyMDZXRXRHUzJ3eWNsVk1ha2x3TnpRQDE4NS4yMjYuMTcyLjg6ODAwOCNHZXJtYW55LTAyIiwic3M6XC9cL1kyaGhZMmhoTWpBdGFXVjBaaTF3YjJ4NU1UTXdOVHByTVdSQ1QyMVBRalJ2Y1drM1ZXMXdNemRoTVdKUkA4Mi4zOC4zMS4yMTc6ODA4MCNOZXRoZXJsYW5kcy0wMSJdfQ",
-  "sig_ext": "MEYCIQCQFBUjFE1ZR66nLaaFiysPUOYiWAsXBGyBZ9H2-ewPWAIhAJ9gH3ElF4RQ3LIOq6lLqqAlw0iDp9Tb0siDXHfCot4x",
-  "sig": "MEQCIAIh3NupKnd5CE-yEAoM-mCJf0e7E2TEFRBy89eLJmvEAiAmhOMe7xdaP7_rMHEPrMYJ_6BBP5GkIn2V5SRMF9zJ5w",
-  "sig_v2": "MEUCIAZwCOKZB74xDgOORXwqlwWsVInCDrdDMgny85S3H5vFAiEAzHBke6r9GDg40W5qE22s0SnGVUQHfaTdgv87DGiKOUM"
+  "sig_ext": "MEQCIAMCFBJ_q_vIJJn9Cru3DQm2rv9jIWoSzuvaeYogGCuoAiBNaVPd6W22XfMah-P-s-PAdHhP8KiqJYr-gt4Mjr7MRw",
+  "sig": "MEQCIChpWGHnjPuFDivhuhnsJK8KU5Q1DNAvS4COpy_RuBVUAiBMJEOPnt-uVSlrMGrmqvPbCwKyJGZi7FYmKC49pgTAwg",
+  "sig_v2": "MEUCIQCrWdyCHpv6jIAnkYadx-aMwTqhr9h07KaE6Qg6YQcGtAIgAhWg_Z0SMjYSEK59ukkT5C_CY7-Pemq6vLOHh_XaE1M"
 }
