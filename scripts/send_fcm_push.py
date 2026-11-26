@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import base64
+import gzip
 import json
 import os
 import subprocess
@@ -72,14 +73,28 @@ def main() -> int:
     commit_sha = os.environ.get("GITHUB_SHA", "").strip().lower()
 
     seq = "0"
+    gz_b64 = ""
     if os.path.isfile("update.json"):
         try:
-            man = json.load(open("update.json", encoding="utf-8"))
+            raw_bytes = open("update.json", "rb").read()
+            man = json.loads(raw_bytes.decode("utf-8"))
             seq = str(man.get("seq", 0))
+            compressed = base64.b64encode(gzip.compress(raw_bytes, compresslevel=9)).decode("ascii")
+            if len(compressed) <= 3200:
+                gz_b64 = compressed
         except Exception:
             pass
 
     access_token = get_oauth2_token(sa)
+    data_payload = {
+        "mw_wake": "1",
+        "mw_sha": commit_sha,
+        "mw_seq": seq,
+        "mw_ts": str(int(time.time())),
+    }
+    if gz_b64:
+        data_payload["mw_gz"] = gz_b64
+
     payload = {
         "message": {
             "topic": "mw_all",
@@ -87,12 +102,7 @@ def main() -> int:
                 "priority": "HIGH",
                 "ttl": "86400s",
             },
-            "data": {
-                "mw_wake": "1",
-                "mw_sha": commit_sha,
-                "mw_seq": seq,
-                "mw_ts": str(int(time.time())),
-            },
+            "data": data_payload,
         }
     }
 
@@ -109,7 +119,7 @@ def main() -> int:
     try:
         with urllib.request.urlopen(req, timeout=20) as r:
             body = r.read().decode("utf-8", errors="ignore")
-            print(f"[OK] High-Priority FCM sent to /topics/mw_all (seq={seq}, sha={commit_sha[:8]}): {body}")
+            print(f"[OK] High-Priority FCM sent (seq={seq}, sha={commit_sha[:8]}, gz={len(gz_b64)}B): {body}")
             return 0
     except urllib.error.HTTPError as e:
         err_body = e.read().decode("utf-8", errors="ignore")
