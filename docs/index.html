@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MW VPN — التحميل الرسمي | مركز عالم الصيانة</title>
+<style>
+  :root{--bg:#060B18;--card:#0C1832;--border:#1E3F7A;--cyan:#00E5FF;--green:#00E676;--gold:#FFD54F;--txt:#EAF2FF;--sub:#9BB5DC}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif}
+  body{background:radial-gradient(circle at 15% 10%,#122A5C 0%,var(--bg) 52%,#030610 100%);color:var(--txt);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .wrap{width:100%;max-width:480px}
+  .card{background:linear-gradient(180deg,#0F1E3D 0%,#070E1F 100%);border:1px solid var(--border);border-radius:26px;padding:26px 22px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .logo{width:76px;height:76px;margin:0 auto 14px;border-radius:22px;background:#081228;border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;box-shadow:0 0 28px rgba(0,229,255,.32)}
+  h1{text-align:center;font-size:26px;letter-spacing:.5px}
+  .sub{text-align:center;color:var(--sub);font-size:13.5px;margin-top:6px}
+  .pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:16px 0}
+  .pill{background:#112347;border:1px solid #244885;color:var(--cyan);font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px}
+  .pill.g{color:var(--green);border-color:#1D6F4B}
+  .btn{display:block;width:100%;text-align:center;text-decoration:none;font-weight:800;font-size:16px;padding:15px;border-radius:16px;margin-top:12px;transition:transform .15s}
+  .btn:active{transform:scale(.98)}
+  .btn-main{background:linear-gradient(90deg,var(--green),var(--cyan));color:#04101E;box-shadow:0 8px 24px rgba(0,229,255,.25)}
+  .btn-wa{background:#112447;border:1px solid var(--green);color:var(--green);font-size:14px;padding:12px}
+  .box{background:#0A152C;border:1px solid #1C386A;border-radius:16px;padding:14px;margin-top:14px}
+  .box h3{font-size:13px;color:var(--gold);margin-bottom:8px}
+  .notes{font-size:13px;line-height:1.8;color:#D6E6FF;white-space:pre-line}
+  .sha{font-family:monospace;font-size:10.5px;color:#7FA2D4;word-break:break-all;margin-top:8px;direction:ltr;text-align:left}
+  .feats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+  .feat{background:#0B1730;border:1px solid #1A3363;border-radius:12px;padding:10px;font-size:12px;color:#D6E6FF;text-align:center}
+  footer{text-align:center;color:#7E99C2;font-size:12px;margin-top:18px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="logo">
+      <svg width="46" height="46" viewBox="0 0 108 108" fill="none">
+        <path d="M54 10 L90 24 L90 52 C90 77 74 93 54 100 C34 93 18 77 18 52 L18 24 Z" fill="#10254C" stroke="#00E5FF" stroke-width="5"/>
+        <path d="M58 28 L37 56 L51 56 L47 80 L71 50 L56 50 Z" fill="#00E676"/>
+      </svg>
+    </div>
+    <h1>MW VPN</h1>
+    <div class="sub">الإصدار الرسمي الموقّع من مركز عالم الصيانة</div>
+    <div class="pills">
+      <span class="pill" id="verPill">جاري جلب الإصدار...</span>
+      <span class="pill g" id="sizePill">Android 7–15</span>
+    </div>
+    <a id="dlBtn" class="btn btn-main" href="#">⬇ تحميل أحدث نسخة (APK رسمي)</a>
+    <a id="waBtn" class="btn btn-wa" href="https://api.whatsapp.com/send?phone=963936284207" target="_blank" rel="noopener">تواصل للتفعيل عبر واتساب</a>
+    <div class="feats">
+      <div class="feat">⚡ ثبات فائق على 3G</div>
+      <div class="feat">🛡️ تشفير TLS 1.3 + AEAD</div>
+      <div class="feat">✦ دعم مباشر لـ Gemini</div>
+      <div class="feat">🚫 مانع إعلانات مدمج</div>
+    </div>
+    <div class="box">
+      <h3>ما الجديد في هذا الإصدار:</h3>
+      <div class="notes" id="notesBox">جاري قراءة ملاحظات الإصدار...</div>
+      <div class="sha" id="shaBox"></div>
+    </div>
+    <footer id="footBox">جميع الحقوق محفوظة © مركز عالم الصيانة<br>اللاذقية - ساحة الحمام • واتساب: 0936284207</footer>
+  </div>
+</div>
+<script>
+const OWNER="ali259516-sys", REPO="mw-vpn-updates", BR="main";
+const URLS=[
+  `https://cdn.jsdelivr.net/gh/${OWNER}/${REPO}@${BR}/update.json?t=${Math.floor(Date.now()/30000)}`,
+  `https://fastly.jsdelivr.net/gh/${OWNER}/${REPO}@${BR}/update.json`,
+  `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BR}/update.json`
+];
+async function loadManifest(){
+  for(const u of URLS){
+    try{
+      const r=await fetch(u,{cache:"no-store"});
+      if(!r.ok) continue;
+      const m=await r.json();
+      if(!m || !m.apk_url) continue;
+      document.getElementById("verPill").textContent="الإصدار v"+(m.version_name||"1.0");
+      if(m.apk_size>0){
+        document.getElementById("sizePill").textContent=(m.apk_size/1048576).toFixed(2)+" MB • موقّع ✓";
+      }
+      const dl=document.getElementById("dlBtn");
+      dl.href=m.apk_url;
+      dl.textContent="⬇ تحميل MW VPN v"+(m.version_name||"")+" الآن";
+      document.getElementById("notesBox").textContent=m.changelog||"تحسينات في السرعة والاستقرار والأمان.";
+      if(m.apk_sha256){
+        document.getElementById("shaBox").textContent="SHA-256: "+m.apk_sha256;
+      }
+      if(m.ext_b64){
+        try{
+          const b64=m.ext_b64.replace(/-/g,"+").replace(/_/g,"/");
+          const pad=b64+"=".repeat((4-b64.length%4)%4);
+          const bytes=Uint8Array.from(atob(pad),c=>c.charCodeAt(0));
+          const ext=JSON.parse(new TextDecoder().decode(bytes));
+          if(ext.sponsor){
+            if(ext.sponsor.wa_phone){
+              document.getElementById("waBtn").href="https://api.whatsapp.com/send?phone="+ext.sponsor.wa_phone.replace(/\D/g,"");
+            }
+            if(ext.sponsor.footer){
+              document.getElementById("footBox").innerHTML="جميع الحقوق محفوظة © "+(ext.sponsor.title||"مركز عالم الصيانة")+"<br>"+ext.sponsor.footer;
+            }
+          }
+        }catch(e){}
+      }
+      return;
+    }catch(e){}
+  }
+  document.getElementById("notesBox").textContent="تعذّر تحميل بيانات الإصدار تلقائياً — تواصل معنا عبر واتساب للحصول على الرابط المباشر.";
+}
+loadManifest();
+</script>
+</body>
+</html>
