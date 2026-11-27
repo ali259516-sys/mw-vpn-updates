@@ -1057,6 +1057,69 @@ public final class RealExitVerifier {
         }
     }
 
+    private static boolean queryGoogleFrontendCleanViaProxy(String[] f) {
+        Socket proxy = null;
+        SSLSocket ssl = null;
+        try {
+            String ip = resolvePublicIpv4(f[2]);
+            if (ip == null) return false;
+            int[] dummyRtt = {0};
+            String host = "gemini.google.com";
+            proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], host, 443, dummyRtt);
+            if (proxy == null) return false;
+            ssl = wrapStrictTls(proxy, host, 443, 4000);
+            OutputStream out = ssl.getOutputStream();
+            out.write(("GET /app HTTP/1.1\r\n"
+                    + "Host: " + host + "\r\n"
+                    + "User-Agent: Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36\r\n"
+                    + "Accept-Language: en-US,en;q=0.9\r\n"
+                    + "Accept-Encoding: identity\r\n"
+                    + "Connection: close\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
+            out.flush();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
+            byte[] buf = new byte[1024];
+            InputStream in = ssl.getInputStream();
+            long rdDeadline = System.currentTimeMillis() + 3800L;
+            try {
+                while (baos.size() < 8192 && System.currentTimeMillis() < rdDeadline) {
+                    int r = in.read(buf);
+                    if (r <= 0) break;
+                    baos.write(buf, 0, r);
+                    if (baos.size() >= 1024) {
+                        String cur = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+                        if (cur.contains("\r\n\r\n")) break;
+                    }
+                }
+            } catch (Throwable ignored) {}
+            if (baos.size() == 0) return false;
+            String sample = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+            String lower = sample.toLowerCase(Locale.ROOT);
+            String first = lower.split("\r?\n", 2)[0];
+            String loc = "";
+            for (String ln : sample.split("\r?\n")) {
+                if (ln.isEmpty()) break;
+                if (ln.toLowerCase(Locale.ROOT).startsWith("location:")) {
+                    loc = ln.substring(9).trim().toLowerCase(Locale.ROOT);
+                    break;
+                }
+            }
+            if (first.contains(" 403") || first.contains(" 451") || first.contains(" 429")
+                    || loc.contains("/faq") || loc.contains("unsupported") || loc.contains("sorry")
+                    || lower.contains("google.com/sorry") || lower.contains("unsupported_country")
+                    || lower.contains("location is not supported")) {
+                return false;
+            }
+            return first.contains(" 200")
+                    || ((first.contains(" 301") || first.contains(" 302") || first.contains(" 307"))
+                        && (loc.contains("gemini.google.com") || loc.contains("accounts.google.com") || loc.startsWith("/")));
+        } catch (Throwable ignored) {
+            return false;
+        } finally {
+            try { if (ssl != null) ssl.close(); } catch (Throwable ignored) {}
+            try { if (proxy != null) proxy.close(); } catch (Throwable ignored) {}
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         SSLContext ctx = SSLContext.getInstance("TLS");
         ctx.init(null, null, null);
@@ -1101,11 +1164,14 @@ public final class RealExitVerifier {
                         }
                         if (cc != null && rtt[0] > 0) {
                             int aiOk = 0;
-                            if (!BLOCKED_CC.contains(cc)
+                            boolean aiRegionEligible = "US".equals(cc) || "CA".equals(cc) || "SG".equals(cc)
+                                    || "JP".equals(cc) || "AU".equals(cc) || "AE".equals(cc) || "SA".equals(cc);
+                            if (aiRegionEligible
+                                    && !BLOCKED_CC.contains(cc)
                                     && rtt[0] <= 350
                                     && System.nanoTime() < aiDeadlineNs
-                                    && aiProbes.incrementAndGet() <= 260) {
-                                if (queryGeminiCleanViaProxy(f)) {
+                                    && aiProbes.incrementAndGet() <= 220) {
+                                if (queryGeminiCleanViaProxy(f) && queryGoogleFrontendCleanViaProxy(f)) {
                                     aiOk = 1;
                                 }
                             }
@@ -1669,7 +1735,7 @@ def main() -> int:
 
     lines = [
         "==========================================================",
-        f"MaintenanceWorld VPN — Verified Cloud Feed Stats (v4.1 {mode_label})",
+        f"MaintenanceWorld VPN — Verified Cloud Feed Stats (v4.2 {mode_label})",
         f"Updated: {now_utc} | Scan Duration: {elapsed}s",
         f"Candidates: {len(candidates)} | Real-Verified: {len(verified)} | Published: {len(final_nodes)} | AI-Clean: {ai_published}",
         f"Real MENA Published: {mena_added} ({mena_cc_str})",
