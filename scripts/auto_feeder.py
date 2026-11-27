@@ -1006,7 +1006,7 @@ public final class RealExitVerifier {
             String host = "generativelanguage.googleapis.com";
             proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], host, 443, dummyRtt);
             if (proxy == null) return false;
-            ssl = wrapStrictTls(proxy, host, 443, 3400);
+            ssl = wrapStrictTls(proxy, host, 443, 4200);
             OutputStream out = ssl.getOutputStream();
             out.write(("GET /v1beta/models?key=MW_LOCATION_VERIFICATION HTTP/1.1\r\n"
                     + "Host: " + host + "\r\n"
@@ -1015,13 +1015,28 @@ public final class RealExitVerifier {
                     + "Accept-Encoding: identity\r\n"
                     + "Connection: close\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
             out.flush();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
             byte[] buf = new byte[1024];
             InputStream in = ssl.getInputStream();
-            int r;
-            while (baos.size() < 4096 && (r = in.read(buf)) > 0) baos.write(buf, 0, r);
+            long rdDeadline = System.currentTimeMillis() + 4200L;
+            try {
+                while (baos.size() < 6144 && System.currentTimeMillis() < rdDeadline) {
+                    int r = in.read(buf);
+                    if (r <= 0) break;
+                    baos.write(buf, 0, r);
+                    String cur = new String(baos.toByteArray(), StandardCharsets.UTF_8).toLowerCase(Locale.ROOT);
+                    if (cur.contains("api_key_invalid")
+                            || cur.contains("api key not valid")
+                            || cur.contains("failed_precondition")
+                            || cur.contains("user location is not supported")) {
+                        break;
+                    }
+                }
+            } catch (Throwable ignored) {
+                // Keep bytes already received if peer resets or times out before TLS close_notify
+            }
+            if (baos.size() == 0) return false;
             String lower = new String(baos.toByteArray(), StandardCharsets.UTF_8).toLowerCase(Locale.ROOT);
-            if (lower.isEmpty()) return false;
             if (lower.contains("user location is not supported")
                     || lower.contains("failed_precondition")
                     || lower.contains("location is not supported")
@@ -1031,10 +1046,9 @@ public final class RealExitVerifier {
                     || lower.contains(" 429")) {
                 return false;
             }
-            return (lower.contains("api key not valid")
+            return lower.contains("api key not valid")
                     || lower.contains("api_key_invalid")
-                    || lower.contains("invalid_argument"))
-                    && !lower.contains("location");
+                    || lower.contains("invalid_argument");
         } catch (Throwable ignored) {
             return false;
         } finally {
@@ -1088,9 +1102,9 @@ public final class RealExitVerifier {
                         if (cc != null && rtt[0] > 0) {
                             int aiOk = 0;
                             if (!BLOCKED_CC.contains(cc)
-                                    && rtt[0] <= 260
+                                    && rtt[0] <= 350
                                     && System.nanoTime() < aiDeadlineNs
-                                    && aiProbes.incrementAndGet() <= 200) {
+                                    && aiProbes.incrementAndGet() <= 260) {
                                 if (queryGeminiCleanViaProxy(f)) {
                                     aiOk = 1;
                                 }
@@ -1655,7 +1669,7 @@ def main() -> int:
 
     lines = [
         "==========================================================",
-        f"MaintenanceWorld VPN — Verified Cloud Feed Stats (v4.0 {mode_label})",
+        f"MaintenanceWorld VPN — Verified Cloud Feed Stats (v4.1 {mode_label})",
         f"Updated: {now_utc} | Scan Duration: {elapsed}s",
         f"Candidates: {len(candidates)} | Real-Verified: {len(verified)} | Published: {len(final_nodes)} | AI-Clean: {ai_published}",
         f"Real MENA Published: {mena_added} ({mena_cc_str})",
