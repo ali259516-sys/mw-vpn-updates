@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-MaintenanceWorld VPN — Cloud Auto Feeder v3.0 (Real Exit-IP + MENA Priority)
-- Fetches 35+ live MENA & Global feeds with fair Round-Robin selection.
-- Filters strictly for MW_VPN protocol compatibility (SS-AEAD, Trojan-TLS, VLESS-TLS non-vision, VMess-AEAD aid=0).
-- Performs REAL tunnel Exit-IP geolocation verification via an embedded zero-dependency Java 8+ verifier
-  (falls back to TCP/TLS/WS101 if javac/java is unavailable).
-- Drops fake-flagged nodes and sanctioned/blocked countries matching CoreTunnelService.java.
-- Guarantees up to 90 top slots in vip_clean.txt for REAL Exit-IP Middle East & Arab (MENA) nodes,
-  and rewrites clean tags (#MW-<REAL_CC>-<RTT>ms) so MW VPN classifies every country accurately.
+MaintenanceWorld VPN — Cloud Auto Feeder v4.0 (Real Exit-IP + Cloud AI-Clean |AI + Balanced MENA/Global)
+- Zero external pip dependencies (Python stdlib + embedded Java 8+ RealExitVerifier).
+- Active high-yield MENA & Global sources only (dead FastNodes/broken endpoints removed).
+- Real tunnel Exit-IP verification for SS-AEAD, Trojan-TLS, VLESS-TLS (non-vision), VMess-AEAD (aid=0).
+- Cloud Gemini/Google GeoIP clean verification tagging verified nodes with #MW-<CC>-<RTT>ms|AI
+  so MW VPN unlocks Gemini instantly via CoreTunnelService.hasCloudAiTag() with zero client battery waste.
+- Balanced country diversity caps (MENA reserved up to 90, US cap 65, other single CC cap 30).
 """
 
 import base64
@@ -26,38 +25,38 @@ import time
 import urllib.parse
 import urllib.request
 
-# Dedicated MENA feeds (bucket="MENA") + High-yield Global feeds (bucket="GLOBAL")
 FEEDS = [
-    # --- Dedicated Middle East & Arab (MENA) Feeds ---
-    ("MENA", "Fast-AE",       "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/countries/AE.txt", 140),
-    ("MENA", "Fast-TR",       "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/countries/TR.txt", 140),
-    ("MENA", "Fast-SA",       "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/countries/SA.txt", 120),
-    ("MENA", "Fast-CY",       "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/countries/CY.txt", 100),
-    ("MENA", "Fast-AM",       "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/countries/AM.txt", 100),
-    ("MENA", "Fast-GE",       "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/countries/GE.txt", 100),
-    ("MENA", "Fast-BH",       "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/countries/BH.txt", 100),
-    ("MENA", "Fast-QA",       "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/countries/QA.txt", 100),
-    ("MENA", "Fast-KW",       "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/countries/KW.txt", 100),
-    ("MENA", "Fast-OM",       "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/countries/OM.txt", 100),
-    ("MENA", "Fast-EG",       "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/countries/EG.txt", 100),
-    ("MENA", "Fast-JO",       "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/countries/JO.txt", 100),
-    ("MENA", "Au1rxx-AE",     "https://cdn.jsdelivr.net/gh/Au1rxx/free-vpn-subscriptions@main/output/by-country/v2ray-base64-AE.txt", 120),
-    ("MENA", "Au1rxx-TR",     "https://cdn.jsdelivr.net/gh/Au1rxx/free-vpn-subscriptions@main/output/by-country/v2ray-base64-TR.txt", 120),
-    ("MENA", "Forge-AE",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/ae/all.txt", 120),
-    ("MENA", "Forge-TR",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/tr/all.txt", 120),
-    ("MENA", "Forge-SA",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/sa/all.txt", 100),
-    ("MENA", "OpenRay-AE",    "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/country/AE.txt", 120),
-    ("MENA", "OpenRay-TR",    "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/country/TR.txt", 120),
-    ("MENA", "OpenRay-CY",    "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/country/CY.txt", 100),
+    # --- Active Middle East & Neighboring (MENA) Feeds ---
+    ("MENA", "Forge-AE",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/ae/all.txt", 160),
+    ("MENA", "Forge-TR",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/tr/all.txt", 160),
+    ("MENA", "Forge-SA",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/sa/all.txt", 120),
+    ("MENA", "Forge-EG",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/eg/all.txt", 100),
+    ("MENA", "Forge-CY",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/cy/all.txt", 100),
+    ("MENA", "Forge-QA",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/qa/all.txt", 100),
+    ("MENA", "Forge-BH",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/bh/all.txt", 100),
+    ("MENA", "Forge-KW",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/kw/all.txt", 100),
+    ("MENA", "Forge-OM",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/om/all.txt", 100),
+    ("MENA", "Forge-JO",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/jo/all.txt", 100),
+    ("MENA", "OpenRay-AE",    "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/country/AE.txt", 140),
+    ("MENA", "OpenRay-TR",    "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/country/TR.txt", 140),
+    ("MENA", "OpenRay-SA",    "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/country/SA.txt", 100),
+    ("MENA", "OpenRay-AM",    "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/country/AM.txt", 100),
+    ("MENA", "OpenRay-GE",    "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/country/GE.txt", 100),
+    ("MENA", "Soli-AE",       "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/United_Arab_Emirates.txt", 140),
+    ("MENA", "Soli-TR",       "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Turkey.txt", 140),
+    ("MENA", "Soli-SA",       "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Saudi_Arabia.txt", 100),
+    ("MENA", "Soli-EG",       "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Egypt.txt", 100),
+    ("MENA", "Soli-GE",       "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Georgia.txt", 100),
+    ("MENA", "Soli-AM",       "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Armenia.txt", 100),
     ("MENA", "v2go-AE",       "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/AE.txt", 120),
     ("MENA", "v2go-TR",       "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/TR.txt", 120),
-    ("MENA", "Soli-TR",       "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Turkey.txt", 120),
-    ("MENA", "Soli-AE",       "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/United_Arab_Emirates.txt", 120),
-    ("MENA", "Soli-CY",       "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Cyprus.txt", 100),
-    # --- Tier 1 & 2 Global Verified Pools ---
+    # --- High-Yield Global Verified Pools ---
     ("GLOBAL", "v2go-US",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/US.txt", 140),
-    ("GLOBAL", "v2go-SG",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/SG.txt", 90),
-    ("GLOBAL", "v2go-DE",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/DE.txt", 90),
+    ("GLOBAL", "v2go-SG",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/SG.txt", 110),
+    ("GLOBAL", "v2go-DE",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/DE.txt", 100),
+    ("GLOBAL", "v2go-GB",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/GB.txt", 100),
+    ("GLOBAL", "v2go-JP",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/JP.txt", 100),
+    ("GLOBAL", "v2go-CA",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/CA.txt", 100),
     ("GLOBAL", "v2go-SS",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Protocol/ss.txt", 160),
     ("GLOBAL", "v2go-VMess",  "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Protocol/vmess.txt", 140),
     ("GLOBAL", "v2go-Trojan", "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Protocol/trojan.txt", 120),
@@ -65,18 +64,19 @@ FEEDS = [
     ("GLOBAL", "Radikal-Ver", "https://cdn.jsdelivr.net/gh/0xRadikal/Free-v2ray-Configs@main/verified/configs_base64.txt", 180),
     ("GLOBAL", "Au1rxx-Ver",  "https://cdn.jsdelivr.net/gh/Au1rxx/free-vpn-subscriptions@main/output/all-verified/v2ray-base64-0001.txt", 180),
     ("GLOBAL", "OpenRay-All", "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/all_valid_proxies.txt", 180),
-    ("GLOBAL", "Fast-Ver",    "https://cdn.jsdelivr.net/gh/rtwo2/FastNodes@main/sub/verified.txt", 160),
-    ("GLOBAL", "Matin-SS",    "https://cdn.jsdelivr.net/gh/MatinGhanbari/v2ray-configs@main/subscriptions/filtered/subs/ss.txt", 140),
+    ("GLOBAL", "Matin-SS",    "https://cdn.jsdelivr.net/gh/MatinGhanbari/v2ray-configs@main/subscriptions/filtered/subs/ss.txt", 150),
     ("GLOBAL", "Matin-Troj",  "https://cdn.jsdelivr.net/gh/MatinGhanbari/v2ray-configs@main/subscriptions/filtered/subs/trojan.txt", 120),
     ("GLOBAL", "Matin-VMess", "https://cdn.jsdelivr.net/gh/MatinGhanbari/v2ray-configs@main/subscriptions/filtered/subs/vmess.txt", 120),
+    ("GLOBAL", "Alirewa-1",   "https://cdn.jsdelivr.net/gh/Alirewa/V2ray-Configs@main/sub1.txt", 140),
+    ("GLOBAL", "Morpheus",    "https://raw.githubusercontent.com/morpheusadam/v2ray-config/main/subs/bundles/best.txt", 140),
     ("GLOBAL", "CFY-Troj",    "https://cdn.jsdelivr.net/gh/mohammadaz2/v2rayConfigsForYou@main/sub/trojan.txt", 100),
     ("GLOBAL", "CFY-VMess",   "https://cdn.jsdelivr.net/gh/mohammadaz2/v2rayConfigsForYou@main/sub/vmess.txt", 100),
     ("GLOBAL", "Barry-SS",    "https://cdn.jsdelivr.net/gh/barry-far/V2ray-Config@main/Splitted-By-Protocol/ss.txt", 140),
     ("GLOBAL", "Barry-Troj",  "https://cdn.jsdelivr.net/gh/barry-far/V2ray-Config@main/Splitted-By-Protocol/trojan.txt", 120),
-    ("GLOBAL", "Radar-SS",    "https://radarhub.top/by-protocol/shadowsocks.txt", 120),
+    ("GLOBAL", "Radar-SS",    "https://radarhub.top/by-protocol/shadowsocks.txt", 140),
     ("GLOBAL", "Radar-Troj",  "https://radarhub.top/by-protocol/trojan.txt", 120),
     ("GLOBAL", "Radar-VMess", "https://radarhub.top/by-protocol/vmess.txt", 120),
-    ("GLOBAL", "Radar-VLESS", "https://radarhub.top/by-protocol/vless.txt", 100),
+    ("GLOBAL", "Radar-VLESS", "https://radarhub.top/by-protocol/vless.txt", 110),
 ]
 
 MENA_COUNTRIES = {
@@ -109,14 +109,16 @@ SS_CIPHER_MAP = {
 IPV4_RE = re.compile(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
 UUID_HEX_RE = re.compile(r"^[0-9a-fA-F]{32}$")
 
-MAX_MENA_CANDIDATES = 650
-MAX_GLOBAL_CANDIDATES = 950
+MAX_MENA_CANDIDATES = 700
+MAX_GLOBAL_CANDIDATES = 1000
 MAX_FINAL_NODES = 280
 MENA_RESERVED_SLOTS = 90
+US_COUNTRY_CAP = 65
+OTHER_COUNTRY_CAP = 30
 MAX_PER_HOST_GLOBAL = 2
 MAX_PER_HOST_MENA = 3
 
-# Self-contained Zero-Dependency Java 8+ Real Tunnel Exit-IP Verifier
+# Self-contained Zero-Dependency Java 8+ Real Tunnel Exit-IP + Cloud Gemini GeoIP Verifier
 JAVA_VERIFIER_SRC = r"""
 import java.io.*;
 import java.net.*;
@@ -125,6 +127,7 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.*;
 import java.util.zip.CRC32;
 import javax.crypto.Cipher;
@@ -150,6 +153,10 @@ public final class RealExitVerifier {
     private static final byte[] KDF_RLEN_N = "AEAD Resp Header Len IV".getBytes(StandardCharsets.US_ASCII);
     private static final byte[] KDF_RHDR_K = "AEAD Resp Header Key".getBytes(StandardCharsets.US_ASCII);
     private static final byte[] KDF_RHDR_N = "AEAD Resp Header IV".getBytes(StandardCharsets.US_ASCII);
+    private static final Set<String> BLOCKED_CC = new HashSet<>(Arrays.asList(
+            "IR","SY","CU","KP","RU","BY","CN","HK","MO","AF","MM","SD","SS",
+            "VE","YE","IQ","LY","SO","CF","CD","ER","ZW","XX","T1","A1","A2","EU"
+    ));
     private static final String CHACHA_ALG = detectChaChaAlg();
     private static final Map<String, String> DNS_CACHE = new ConcurrentHashMap<>();
     private static SSLSocketFactory SSL_FACTORY;
@@ -989,6 +996,53 @@ public final class RealExitVerifier {
         }
     }
 
+    private static boolean queryGeminiCleanViaProxy(String[] f) {
+        Socket proxy = null;
+        SSLSocket ssl = null;
+        try {
+            String ip = resolvePublicIpv4(f[2]);
+            if (ip == null) return false;
+            int[] dummyRtt = {0};
+            String host = "generativelanguage.googleapis.com";
+            proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], host, 443, dummyRtt);
+            if (proxy == null) return false;
+            ssl = wrapStrictTls(proxy, host, 443, 3400);
+            OutputStream out = ssl.getOutputStream();
+            out.write(("GET /v1beta/models?key=MW_LOCATION_VERIFICATION HTTP/1.1\r\n"
+                    + "Host: " + host + "\r\n"
+                    + "User-Agent: Mozilla/5.0 (Linux; Android 14)\r\n"
+                    + "Accept: application/json\r\n"
+                    + "Accept-Encoding: identity\r\n"
+                    + "Connection: close\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
+            out.flush();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+            byte[] buf = new byte[1024];
+            InputStream in = ssl.getInputStream();
+            int r;
+            while (baos.size() < 4096 && (r = in.read(buf)) > 0) baos.write(buf, 0, r);
+            String lower = new String(baos.toByteArray(), StandardCharsets.UTF_8).toLowerCase(Locale.ROOT);
+            if (lower.isEmpty()) return false;
+            if (lower.contains("user location is not supported")
+                    || lower.contains("failed_precondition")
+                    || lower.contains("location is not supported")
+                    || lower.contains("not available in your country")
+                    || lower.contains("google.com/sorry")
+                    || lower.contains(" 451")
+                    || lower.contains(" 429")) {
+                return false;
+            }
+            return (lower.contains("api key not valid")
+                    || lower.contains("api_key_invalid")
+                    || lower.contains("invalid_argument"))
+                    && !lower.contains("location");
+        } catch (Throwable ignored) {
+            return false;
+        } finally {
+            try { if (ssl != null) ssl.close(); } catch (Throwable ignored) {}
+            try { if (proxy != null) proxy.close(); } catch (Throwable ignored) {}
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         SSLContext ctx = SSLContext.getInstance("TLS");
         ctx.init(null, null, null);
@@ -1013,8 +1067,10 @@ public final class RealExitVerifier {
             }
         });
         final Object outLock = new Object();
+        final AtomicInteger aiProbes = new AtomicInteger(0);
         final CountDownLatch latch = new CountDownLatch(rows.size());
-        final long deadlineNs = System.nanoTime() + TimeUnit.SECONDS.toNanos(165);
+        final long deadlineNs = System.nanoTime() + TimeUnit.SECONDS.toNanos(185);
+        final long aiDeadlineNs = System.nanoTime() + TimeUnit.SECONDS.toNanos(155);
 
         for (final String[] f : rows) {
             pool.execute(new Runnable() {
@@ -1030,8 +1086,17 @@ public final class RealExitVerifier {
                             cc = queryGeoViaProxy(f, "ipinfo.io", "/country", false, rtt);
                         }
                         if (cc != null && rtt[0] > 0) {
+                            int aiOk = 0;
+                            if (!BLOCKED_CC.contains(cc)
+                                    && rtt[0] <= 260
+                                    && System.nanoTime() < aiDeadlineNs
+                                    && aiProbes.incrementAndGet() <= 200) {
+                                if (queryGeminiCleanViaProxy(f)) {
+                                    aiOk = 1;
+                                }
+                            }
                             synchronized (outLock) {
-                                System.out.println("OK\t" + f[0] + "\t" + cc + "\t" + rtt[0]);
+                                System.out.println("OK\t" + f[0] + "\t" + cc + "\t" + rtt[0] + "\t" + aiOk);
                                 System.out.flush();
                             }
                         }
@@ -1041,7 +1106,7 @@ public final class RealExitVerifier {
                 }
             });
         }
-        latch.await(170, TimeUnit.SECONDS);
+        latch.await(190, TimeUnit.SECONDS);
         pool.shutdownNow();
     }
 }
@@ -1115,7 +1180,6 @@ def has_mena_tag(line: str) -> bool:
 
 
 def parse_compatible_node(line: str):
-    """Returns dict matching EncryptedTransportAdapter.java rules, or None."""
     line = sanitize_token(line)
     if not line or line.startswith("#") or "://" not in line:
         return None
@@ -1157,17 +1221,9 @@ def parse_compatible_node(line: str):
             if not is_public_host(host) or not (1 <= port <= 65535):
                 return None
             return {
-                "proto": "SS-AEAD",
-                "j_proto": j_proto,
-                "host": host,
-                "port": port,
-                "auth": pwd,
-                "outer_tls": False,
-                "transport": "tcp",
-                "sni": "",
-                "ws_host": "",
-                "ws_path": "",
-                "uri": line,
+                "proto": "SS-AEAD", "j_proto": j_proto, "host": host, "port": port,
+                "auth": pwd, "outer_tls": False, "transport": "tcp",
+                "sni": "", "ws_host": "", "ws_path": "", "uri": line,
             }
 
         if lo.startswith("trojan://"):
@@ -1202,17 +1258,9 @@ def parse_compatible_node(line: str):
             if IPV4_RE.match(sni) or not sni:
                 return None
             return {
-                "proto": "TROJAN-TLS",
-                "j_proto": "TROJAN-TLS",
-                "host": host,
-                "port": port,
-                "auth": pwd,
-                "outer_tls": True,
-                "transport": typ,
-                "sni": sni,
-                "ws_host": ws_host,
-                "ws_path": ws_path or "/",
-                "uri": line,
+                "proto": "TROJAN-TLS", "j_proto": "TROJAN-TLS", "host": host, "port": port,
+                "auth": pwd, "outer_tls": True, "transport": typ,
+                "sni": sni, "ws_host": ws_host, "ws_path": ws_path or "/", "uri": line,
             }
 
         if lo.startswith("vless://"):
@@ -1248,17 +1296,9 @@ def parse_compatible_node(line: str):
             if IPV4_RE.match(sni) or not sni:
                 return None
             return {
-                "proto": "VLESS-TLS",
-                "j_proto": "VLESS-TLS",
-                "host": host,
-                "port": port,
-                "auth": uuid,
-                "outer_tls": True,
-                "transport": typ,
-                "sni": sni,
-                "ws_host": ws_host,
-                "ws_path": ws_path or "/",
-                "uri": line,
+                "proto": "VLESS-TLS", "j_proto": "VLESS-TLS", "host": host, "port": port,
+                "auth": uuid, "outer_tls": True, "transport": typ,
+                "sni": sni, "ws_host": ws_host, "ws_path": ws_path or "/", "uri": line,
             }
 
         if lo.startswith("vmess://"):
@@ -1272,9 +1312,8 @@ def parse_compatible_node(line: str):
             aid_val = obj.get("aid", 0)
             if aid_val is not None:
                 aid_str = str(aid_val).strip()
-                if aid_str and aid_str.lower() != "null":
-                    if int(aid_str) != 0:
-                        return None
+                if aid_str and aid_str.lower() != "null" and int(aid_str) != 0:
+                    return None
             tls_val = str(obj.get("tls", "")).lower().strip()
             use_tls = tls_val == "tls"
             if not use_tls and tls_val not in ("", "none"):
@@ -1302,17 +1341,9 @@ def parse_compatible_node(line: str):
                 return None
             p_name = "VMESS-TLS" if use_tls else "VMESS-AEAD"
             return {
-                "proto": p_name,
-                "j_proto": p_name,
-                "host": host,
-                "port": port,
-                "auth": uuid,
-                "outer_tls": use_tls,
-                "transport": net,
-                "sni": sni,
-                "ws_host": ws_host,
-                "ws_path": ws_path or "/",
-                "uri": line,
+                "proto": p_name, "j_proto": p_name, "host": host, "port": port,
+                "auth": uuid, "outer_tls": use_tls, "transport": net,
+                "sni": sni, "ws_host": ws_host, "ws_path": ws_path or "/", "uri": line,
             }
     except Exception:
         return None
@@ -1326,7 +1357,7 @@ def fetch_feed(feed_tuple):
         req = urllib.request.Request(
             url,
             headers={
-                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) MaintenanceWorldVPN-Feeder/3.0",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) MaintenanceWorldVPN-Feeder/4.0",
                 "Accept-Encoding": "identity",
             },
         )
@@ -1350,12 +1381,11 @@ def fetch_feed(feed_tuple):
 
 
 def verify_candidates_java_real_exit(candidates):
-    """Compiles & runs embedded Java RealExitVerifier to check REAL Exit-IP inside each tunnel."""
     javac = shutil.which("javac")
     java = shutil.which("java")
     if not javac or not java:
         return None
-    tmp_dir = tempfile.mkdtemp(prefix="mw_real_exit_")
+    tmp_dir = tempfile.mkdtemp(prefix="mw_real_exit_v4_")
     try:
         src_p = os.path.join(tmp_dir, "RealExitVerifier.java")
         with open(src_p, "w", encoding="utf-8") as f:
@@ -1376,18 +1406,19 @@ def verify_candidates_java_real_exit(candidates):
             input=stdin_data,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=200,
+            timeout=220,
         )
         results = {}
         for line in proc.stdout.decode("utf-8", errors="ignore").splitlines():
             parts = line.split("\t")
-            if len(parts) == 4 and parts[0] == "OK":
+            if len(parts) >= 4 and parts[0] == "OK":
                 try:
                     idx = int(parts[1])
                     cc = parts[2].strip().upper()
                     rtt = int(parts[3])
+                    ai_ok = (len(parts) >= 5 and parts[4].strip() == "1")
                     if len(cc) == 2 and rtt > 0:
-                        results[idx] = (cc, rtt)
+                        results[idx] = (cc, rtt, ai_ok)
                 except Exception:
                     pass
         return results
@@ -1396,11 +1427,8 @@ def verify_candidates_java_real_exit(candidates):
 
 
 def verify_node_python_fallback(node: dict):
-    """Fallback TCP + TLS + WS101 verifier if Java runtime is absent."""
-    host = node["host"]
-    port = node["port"]
-    raw_sock = None
-    sock = None
+    host, port = node["host"], node["port"]
+    raw_sock = sock = None
     try:
         t0 = time.monotonic()
         raw_sock = socket.create_connection((host, port), timeout=2.5)
@@ -1428,23 +1456,23 @@ def verify_node_python_fallback(node: dict):
                     return None
         node["rtt"] = rtt_ms
         node["real_cc"] = "UN"
+        node["ai_ok"] = False
         return node
     except Exception:
         return None
     finally:
         for s in (sock, raw_sock):
             if s is not None:
-                try:
-                    s.close()
-                except Exception:
-                    pass
+                try: s.close()
+                except Exception: pass
 
 
-def rewrite_clean_uri_tag(uri: str, real_cc: str, rtt_ms: int) -> str:
+def rewrite_clean_uri_tag(uri: str, real_cc: str, rtt_ms: int, ai_ok: bool) -> str:
     if not real_cc or len(real_cc) != 2 or real_cc == "UN":
         return uri
     base = uri.rsplit("#", 1)[0] if "#" in uri else uri
-    return f"{base}#MW-{real_cc}-{rtt_ms}ms"
+    suffix = "|AI" if ai_ok else ""
+    return f"{base}#MW-{real_cc}-{rtt_ms}ms{suffix}"
 
 
 def run_self_test() -> int:
@@ -1453,14 +1481,14 @@ def run_self_test() -> int:
     if not javac or not java:
         print("[ERROR] javac/java غير متوفر!")
         return 1
-    tmp_dir = tempfile.mkdtemp(prefix="mw_selftest_")
+    tmp_dir = tempfile.mkdtemp(prefix="mw_selftest_v4_")
     try:
         src_p = os.path.join(tmp_dir, "RealExitVerifier.java")
         with open(src_p, "w", encoding="utf-8") as f:
             f.write(JAVA_VERIFIER_SRC)
         subprocess.check_call([javac, "-Xlint:-options", "-encoding", "UTF-8", src_p], cwd=tmp_dir)
         subprocess.run([java, "-cp", tmp_dir, "RealExitVerifier"], input=b"", check=True, timeout=15)
-        print("[OK] اجتاز auto_feeder.py v3.0 الفحص الذاتي الأوفلاين (Python + Java RealExitVerifier) بـ 0 أخطاء!")
+        print("[OK] اجتاز auto_feeder.py v4.0 الفحص الذاتي الأوفلاين (Real Exit-IP + AI-Clean |AI) بـ 0 أخطاء!")
         return 0
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
@@ -1476,10 +1504,9 @@ def main() -> int:
     global_buckets = []
     seen_keys = set()
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=14) as ex:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=16) as ex:
         for bucket, name, items in ex.map(fetch_feed, FEEDS):
-            uniq_mena = []
-            uniq_global = []
+            uniq_mena, uniq_global = [], []
             for item in items:
                 key = (item["j_proto"], item["host"].lower(), item["port"], item["sni"].lower(), item["ws_path"])
                 if key not in seen_keys:
@@ -1520,11 +1547,11 @@ def main() -> int:
     verified = []
     blocked_dropped = 0
     fake_mena_dropped = 0
-    mode_label = "Real-Exit-IP (Java Engine)"
+    mode_label = "Real-Exit-IP + AI-Clean (Java Engine)"
 
     java_res = verify_candidates_java_real_exit(candidates)
     if java_res is not None:
-        for idx, (cc, rtt_ms) in java_res.items():
+        for idx, (cc, rtt_ms, ai_ok) in java_res.items():
             node = candidates[idx]
             if cc in BLOCKED_COUNTRIES:
                 blocked_dropped += 1
@@ -1533,7 +1560,8 @@ def main() -> int:
                 fake_mena_dropped += 1
             node["real_cc"] = cc
             node["rtt"] = rtt_ms
-            node["uri"] = rewrite_clean_uri_tag(node["uri"], cc, rtt_ms)
+            node["ai_ok"] = ai_ok
+            node["uri"] = rewrite_clean_uri_tag(node["uri"], cc, rtt_ms, ai_ok)
             verified.append(node)
     else:
         mode_label = "Python Fallback (TCP+TLS)"
@@ -1542,14 +1570,12 @@ def main() -> int:
                 if res is not None:
                     verified.append(res)
 
-    proto_priority = {
-        "SS-AEAD": 0,
-        "TROJAN-TLS": 1,
-        "VMESS-TLS": 2,
-        "VLESS-TLS": 2,
-        "VMESS-AEAD": 3,
-    }
-    verified.sort(key=lambda x: (x["rtt"] + proto_priority.get(x["proto"], 4) * 25, x["rtt"]))
+    proto_priority = {"SS-AEAD": 0, "TROJAN-TLS": 1, "VMESS-TLS": 2, "VLESS-TLS": 2, "VMESS-AEAD": 3}
+    verified.sort(key=lambda x: (
+        0 if x.get("ai_ok") else 1,
+        x["rtt"] + proto_priority.get(x["proto"], 4) * 25,
+        x["rtt"],
+    ))
 
     mena_verified = [n for n in verified if n.get("real_cc") in MENA_COUNTRIES]
     other_verified = [n for n in verified if n.get("real_cc") not in MENA_COUNTRIES]
@@ -1558,6 +1584,7 @@ def main() -> int:
     host_counts = {}
     proto_counts = {}
     cc_counts = {}
+    ai_published = 0
 
     # 1) Guaranteed MENA real-exit slots first (up to MENA_RESERVED_SLOTS)
     mena_added = 0
@@ -1570,12 +1597,34 @@ def main() -> int:
         host_counts[hk] = host_counts.get(hk, 0) + 1
         final_nodes.append(n)
         mena_added += 1
+        if n.get("ai_ok"):
+            ai_published += 1
         proto_counts[n["proto"]] = proto_counts.get(n["proto"], 0) + 1
         cc = n.get("real_cc", "UN")
         cc_counts[cc] = cc_counts.get(cc, 0) + 1
 
-    # 2) Fill remaining slots with cleanest global real-exit nodes
+    # 2) Balanced global pass (enforces US_COUNTRY_CAP & OTHER_COUNTRY_CAP for rich country diversity)
+    overflow = []
     for n in other_verified:
+        if len(final_nodes) >= MAX_FINAL_NODES:
+            break
+        hk = n["host"].lower()
+        if host_counts.get(hk, 0) >= MAX_PER_HOST_GLOBAL:
+            continue
+        cc = n.get("real_cc", "UN")
+        cc_cap = US_COUNTRY_CAP if cc == "US" else OTHER_COUNTRY_CAP
+        if cc_counts.get(cc, 0) >= cc_cap:
+            overflow.append(n)
+            continue
+        host_counts[hk] = host_counts.get(hk, 0) + 1
+        final_nodes.append(n)
+        if n.get("ai_ok"):
+            ai_published += 1
+        proto_counts[n["proto"]] = proto_counts.get(n["proto"], 0) + 1
+        cc_counts[cc] = cc_counts.get(cc, 0) + 1
+
+    # 3) Backfill any remaining seats up to MAX_FINAL_NODES from fastest overflow nodes
+    for n in overflow:
         if len(final_nodes) >= MAX_FINAL_NODES:
             break
         hk = n["host"].lower()
@@ -1583,6 +1632,8 @@ def main() -> int:
             continue
         host_counts[hk] = host_counts.get(hk, 0) + 1
         final_nodes.append(n)
+        if n.get("ai_ok"):
+            ai_published += 1
         proto_counts[n["proto"]] = proto_counts.get(n["proto"], 0) + 1
         cc = n.get("real_cc", "UN")
         cc_counts[cc] = cc_counts.get(cc, 0) + 1
@@ -1600,13 +1651,13 @@ def main() -> int:
     rtts = [n["rtt"] for n in final_nodes]
     avg_rtt = int(sum(rtts) / max(1, len(rtts)))
     mena_cc_str = ", ".join(f"{k}={v}" for k, v in sorted(cc_counts.items()) if k in MENA_COUNTRIES) or "None"
-    top_cc_str = ", ".join(f"{k}={v}" for k, v in sorted(cc_counts.items(), key=lambda kv: -kv[1])[:12])
+    top_cc_str = ", ".join(f"{k}={v}" for k, v in sorted(cc_counts.items(), key=lambda kv: -kv[1])[:14])
 
     lines = [
         "==========================================================",
-        f"MaintenanceWorld VPN — Verified Cloud Feed Stats (v3.0 {mode_label})",
+        f"MaintenanceWorld VPN — Verified Cloud Feed Stats (v4.0 {mode_label})",
         f"Updated: {now_utc} | Scan Duration: {elapsed}s",
-        f"Candidates: {len(candidates)} | Real-Verified: {len(verified)} | Published: {len(final_nodes)}",
+        f"Candidates: {len(candidates)} | Real-Verified: {len(verified)} | Published: {len(final_nodes)} | AI-Clean: {ai_published}",
         f"Real MENA Published: {mena_added} ({mena_cc_str})",
         f"Filtered Out: Blocked-CC={blocked_dropped} | Fake-MENA-Flags={fake_mena_dropped}",
         f"RTT (Runner): min={min(rtts)}ms | avg={avg_rtt}ms | max={max(rtts)}ms",
