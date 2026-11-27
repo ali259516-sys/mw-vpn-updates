@@ -75,7 +75,7 @@ async function loadManifest(){
       const m=await r.json();
       if(!m || !m.apk_url) continue;
       document.getElementById("verPill").textContent="الإصدار v"+(m.version_name||"1.0");
-      if(m.apk_size>0){
+      if(m.apk_size > 0){
         document.getElementById("sizePill").textContent=(m.apk_size/1048576).toFixed(2)+" MB • موقّع ✓";
       }
       const dl=document.getElementById("dlBtn");
@@ -89,7 +89,7 @@ async function loadManifest(){
         try{
           const b64=m.ext_b64.replace(/-/g,"+").replace(/_/g,"/");
           const pad=b64+"=".repeat((4-b64.length%4)%4);
-          const bytes=Uint8Array.from(atob(pad),c=>c.charCodeAt(0));
+          const bytes=Uint8Array.from(atob(pad),function(c){return c.charCodeAt(0);});
           const ext=JSON.parse(new TextDecoder().decode(bytes));
           if(ext.sponsor){
             if(ext.sponsor.wa_phone){
