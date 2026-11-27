@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MW VPN — التحميل الرسمي | مركز عالم الصيانة</title>
+<title>MW VPN — Official Release &amp; Privacy Policy | مركز عالم الصيانة</title>
 <style>
   :root{--bg:#060B18;--card:#0C1832;--border:#1E3F7A;--cyan:#00E5FF;--green:#00E676;--gold:#FFD54F;--txt:#EAF2FF;--sub:#9BB5DC}
   *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif}
   body{background:radial-gradient(circle at 15% 10%,#122A5C 0%,var(--bg) 52%,#030610 100%);color:var(--txt);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-  .wrap{width:100%;max-width:480px}
+  .wrap{width:100%;max-width:500px}
   .card{background:linear-gradient(180deg,#0F1E3D 0%,#070E1F 100%);border:1px solid var(--border);border-radius:26px;padding:26px 22px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
   .logo{width:76px;height:76px;margin:0 auto 14px;border-radius:22px;background:#081228;border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;box-shadow:0 0 28px rgba(0,229,255,.32)}
   h1{text-align:center;font-size:26px;letter-spacing:.5px}
@@ -23,9 +23,12 @@
   .box{background:#0A152C;border:1px solid #1C386A;border-radius:16px;padding:14px;margin-top:14px}
   .box h3{font-size:13px;color:var(--gold);margin-bottom:8px}
   .notes{font-size:13px;line-height:1.8;color:#D6E6FF;white-space:pre-line}
-  .sha{font-family:monospace;font-size:10.5px;color:#7FA2D4;word-break:break-all;margin-top:8px;direction:ltr;text-align:left}
+  .sha{font-family:monospace;font-size:10.5px;color:#7FA2D4;word-break:break-all;margin-top:8px;direction:ltr;text-align:left;line-height:1.5}
   .feats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
   .feat{background:#0B1730;border:1px solid #1A3363;border-radius:12px;padding:10px;font-size:12px;color:#D6E6FF;text-align:center}
+  .priv{font-size:12px;line-height:1.75;color:#B9D0F2}
+  .priv-en{direction:ltr;text-align:left;margin-top:10px;padding-top:10px;border-top:1px solid #1A3363;font-size:11.5px;color:#9BB5DC;line-height:1.65}
+  .priv-en strong{color:#EAF2FF}
   footer{text-align:center;color:#7E99C2;font-size:12px;margin-top:18px;line-height:1.7}
 </style>
 </head>
@@ -45,11 +48,11 @@
       <span class="pill g" id="sizePill">Android 7–15</span>
     </div>
     <a id="dlBtn" class="btn btn-main" href="#">⬇ تحميل أحدث نسخة (APK رسمي)</a>
-    <a id="waBtn" class="btn btn-wa" href="https://api.whatsapp.com/send?phone=963936284207" target="_blank" rel="noopener">تواصل للتفعيل عبر واتساب</a>
+    <a id="waBtn" class="btn btn-wa" href="https://api.whatsapp.com/send?phone=963936284207" target="_blank" rel="noopener">تواصل للتفعيل والدعم عبر واتساب</a>
     <div class="feats">
-      <div class="feat">⚡ ثبات فائق على 3G</div>
+      <div class="feat">⚡ ثبات فائق على 3G/4G</div>
       <div class="feat">🛡️ تشفير TLS 1.3 + AEAD</div>
-      <div class="feat">✦ دعم مباشر لـ Gemini</div>
+      <div class="feat">🔒 صفر سجلات تصفّح</div>
       <div class="feat">🚫 مانع إعلانات مدمج</div>
     </div>
     <div class="box">
@@ -57,15 +60,27 @@
       <div class="notes" id="notesBox">جاري قراءة ملاحظات الإصدار...</div>
       <div class="sha" id="shaBox"></div>
     </div>
+    <div class="box" id="privacy">
+      <h3>سياسة الخصوصية والتحقق الأمني • Privacy Policy &amp; Security</h3>
+      <div class="priv">
+        • يستخدم MW VPN واجهة Android VpnService الرسمية لإنشاء نفق مشفّر بالكامل (TLS 1.3/1.2 وAEAD) لحماية اتصالك.<br>
+        • لا يقوم التطبيق بجمع أو تخزين أو بيع سجل التصفح أو بياناتك الشخصية.<br>
+        • يُستخدم إذن التثبيت حصراً لتحديث التطبيق من هذا المصدر الرسمي بعد التحقق التشفيري من التوقيع (ECDSA P-256) وبصمة SHA-256 وبموافقتك المباشرة.
+      </div>
+      <div class="priv-en">
+        <strong>Privacy &amp; VpnService Disclosure:</strong> MW VPN (<code>sy.latakia.maintenanceworld.vpn</code>) is an independently distributed privacy VPN client developed by MaintenanceWorld. It uses Android's standard <code>VpnService</code> API exclusively to encrypt user network traffic end-to-end via TLS 1.2/1.3 and AEAD protocols. We do not log browsing history, DNS queries, or personal user data. In-app updates are cryptographically verified (ECDSA P-256 + SHA-256 + pinned signing certificate) and always require explicit user confirmation.
+        <div class="sha">Package: sy.latakia.maintenanceworld.vpn<br>Official Signer SHA-256: 0bc74d4ca06ae6c0fe94d5f183e343dde52b132e27dfe0f9b8eaeb3e5102b6da</div>
+      </div>
+    </div>
     <footer id="footBox">جميع الحقوق محفوظة © مركز عالم الصيانة<br>اللاذقية - ساحة الحمام • واتساب: 0936284207</footer>
   </div>
 </div>
 <script>
 const OWNER="ali259516-sys", REPO="mw-vpn-updates", BR="main";
 const URLS=[
+  `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BR}/update.json?t=${Math.floor(Date.now()/30000)}`,
   `https://cdn.jsdelivr.net/gh/${OWNER}/${REPO}@${BR}/update.json?t=${Math.floor(Date.now()/30000)}`,
-  `https://fastly.jsdelivr.net/gh/${OWNER}/${REPO}@${BR}/update.json`,
-  `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BR}/update.json`
+  `https://fastly.jsdelivr.net/gh/${OWNER}/${REPO}@${BR}/update.json`
 ];
 async function loadManifest(){
   for(const u of URLS){
@@ -79,11 +94,13 @@ async function loadManifest(){
         document.getElementById("sizePill").textContent=(m.apk_size/1048576).toFixed(2)+" MB • موقّع ✓";
       }
       const dl=document.getElementById("dlBtn");
-      dl.href=m.apk_url;
+      if(typeof m.apk_url==="string" && m.apk_url.startsWith("https://")){
+        dl.href=m.apk_url;
+      }
       dl.textContent="⬇ تحميل MW VPN v"+(m.version_name||"")+" الآن";
       document.getElementById("notesBox").textContent=m.changelog||"تحسينات في السرعة والاستقرار والأمان.";
       if(m.apk_sha256){
-        document.getElementById("shaBox").textContent="SHA-256: "+m.apk_sha256;
+        document.getElementById("shaBox").textContent="APK SHA-256: "+m.apk_sha256;
       }
       if(m.ext_b64){
         try{
@@ -93,10 +110,14 @@ async function loadManifest(){
           const ext=JSON.parse(new TextDecoder().decode(bytes));
           if(ext.sponsor){
             if(ext.sponsor.wa_phone){
-              document.getElementById("waBtn").href="https://api.whatsapp.com/send?phone="+ext.sponsor.wa_phone.replace(/\D/g,"");
+              document.getElementById("waBtn").href="https://api.whatsapp.com/send?phone="+String(ext.sponsor.wa_phone).replace(/\D/g,"");
             }
             if(ext.sponsor.footer){
-              document.getElementById("footBox").innerHTML="جميع الحقوق محفوظة © "+(ext.sponsor.title||"مركز عالم الصيانة")+"<br>"+ext.sponsor.footer;
+              const foot=document.getElementById("footBox");
+              foot.textContent="";
+              foot.appendChild(document.createTextNode("جميع الحقوق محفوظة © "+(ext.sponsor.title||"مركز عالم الصيانة")));
+              foot.appendChild(document.createElement("br"));
+              foot.appendChild(document.createTextNode(String(ext.sponsor.footer)));
             }
           }
         }catch(e){}
