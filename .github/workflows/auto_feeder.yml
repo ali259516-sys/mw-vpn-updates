@@ -15,7 +15,7 @@ concurrency:
 jobs:
   build-clean-feed:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 14
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -25,14 +25,18 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Load Previous Verified Feed for Accumulation
+      - name: Load Persistent Registry & Source Health from feeds Branch
         run: |
           if git fetch origin feeds --depth=1 2>/dev/null; then
             git show FETCH_HEAD:vip_clean.txt > prev_vip_clean.txt 2>/dev/null || true
+            git show FETCH_HEAD:registry.json > prev_registry.json 2>/dev/null || true
+            git show FETCH_HEAD:sources_state.json > prev_sources_state.json 2>/dev/null || true
           fi
-          echo "Loaded previous seed lines: $(wc -l < prev_vip_clean.txt 2>/dev/null || echo 0)"
+          echo "Prev feed lines: $(wc -l < prev_vip_clean.txt 2>/dev/null || echo 0)"
 
-      - name: Run Cloud Accumulator v5.2 (Real Exit-IP + Cloudflare WAF |CF + Low-Ping)
+      - name: Run Autonomous Cloud Hunter v6.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 scripts/auto_feeder.py
 
       - name: Publish to Isolated feeds Branch (Single Clean Commit)
@@ -45,12 +49,14 @@ jobs:
           fi
           mkdir -p /tmp/mw_feeds_branch
           cp vip_clean.txt stats.txt /tmp/mw_feeds_branch/
+          [ -s registry.json ] && cp registry.json /tmp/mw_feeds_branch/
+          [ -s sources_state.json ] && cp sources_state.json /tmp/mw_feeds_branch/
           cd /tmp/mw_feeds_branch
           git init -b feeds
-          git config user.name "mw-vpn-feeder"
+          git config user.name "mw-vpn-hunter"
           git config user.email "actions@users.noreply.github.com"
-          git add vip_clean.txt stats.txt
-          git commit -m "Cloud Accumulator v5.2 ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+          git add .
+          git commit -m "Cloud Hunter v6.0 ($(date -u '+%Y-%m-%d %H:%M UTC'))"
           git push --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" feeds:feeds
 
       - name: Purge jsDelivr CDN Cache
