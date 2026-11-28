@@ -1,0 +1,24 @@
+name: Monthly Repo Keepalive
+
+on:
+  schedule:
+    - cron: '0 4 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refresh Keepalive Timestamp
+        run: |
+          date -u '+%Y-%m-%d %H:%M UTC' > .github/.keepalive
+          git config user.name "mw-vpn-keepalive"
+          git config user.email "actions@users.noreply.github.com"
+          git add .github/.keepalive
+          git diff --cached --quiet || git commit -m "Keepalive: prevent 60-day Actions auto-disable"
+          git push
