@@ -16,6 +16,29 @@ def b64u(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
 
 
+def http_post_retry(url: str, data: bytes, headers: dict, label: str, attempts: int = 3) -> str:
+    last_err = None
+    for idx in range(1, attempts + 1):
+        req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                return resp.read().decode("utf-8", errors="ignore")
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode("utf-8", errors="ignore")
+            last_err = RuntimeError(f"{label} HTTP {e.code}: {err_body}")
+            if e.code in (429, 500, 502, 503, 504) and idx < attempts:
+                time.sleep(idx * 2)
+                continue
+            raise last_err
+        except Exception as ex:
+            last_err = ex
+            if idx < attempts:
+                time.sleep(idx * 2)
+                continue
+            raise last_err
+    raise last_err
+
+
 def get_oauth2_token(sa: dict) -> str:
     now = int(time.time())
     header = {"alg": "RS256", "typ": "JWT"}
@@ -51,15 +74,14 @@ def get_oauth2_token(sa: dict) -> str:
         }
     ).encode("ascii")
 
-    req = urllib.request.Request(
+    raw_tok = http_post_retry(
         sa.get("token_uri", "https://oauth2.googleapis.com/token"),
-        data=form,
-        headers={"Content-Type": "application/x-www-form-urlencoded"},
-        method="POST",
+        form,
+        {"Content-Type": "application/x-www-form-urlencoded"},
+        "OAuth2",
+        attempts=3,
     )
-    with urllib.request.urlopen(req, timeout=20) as resp:
-        tok_data = json.loads(resp.read().decode("utf-8"))
-    return tok_data["access_token"]
+    return json.loads(raw_tok)["access_token"]
 
 
 def main() -> int:
@@ -74,16 +96,20 @@ def main() -> int:
 
     seq = "0"
     gz_b64 = ""
+    raw_gz_len = 0
     if os.path.isfile("update.json"):
         try:
             raw_bytes = open("update.json", "rb").read()
             man = json.loads(raw_bytes.decode("utf-8"))
             seq = str(man.get("seq", 0))
             compressed = base64.b64encode(gzip.compress(raw_bytes, compresslevel=9)).decode("ascii")
-            if len(compressed) <= 3200:
+            raw_gz_len = len(compressed)
+            if raw_gz_len <= 3200:
                 gz_b64 = compressed
-        except Exception:
-            pass
+            else:
+                print(f"[WARN] Compressed update.json is {raw_gz_len}B (>3200B); sending SHA wakeup only.")
+        except Exception as ex:
+            print(f"[WARN] Failed to inspect update.json: {ex}")
 
     access_token = get_oauth2_token(sa)
     data_payload = {
@@ -107,23 +133,21 @@ def main() -> int:
     }
 
     url = f"https://fcm.googleapis.com/v1/projects/{project_id}/messages:send"
-    req = urllib.request.Request(
-        url,
-        data=json.dumps(payload).encode("utf-8"),
-        headers={
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json; charset=UTF-8",
-        },
-        method="POST",
-    )
     try:
-        with urllib.request.urlopen(req, timeout=20) as r:
-            body = r.read().decode("utf-8", errors="ignore")
-            print(f"[OK] High-Priority FCM sent (seq={seq}, sha={commit_sha[:8]}, gz={len(gz_b64)}B): {body}")
-            return 0
-    except urllib.error.HTTPError as e:
-        err_body = e.read().decode("utf-8", errors="ignore")
-        print(f"[ERROR] FCM HTTP {e.code}: {err_body}")
+        body = http_post_retry(
+            url,
+            json.dumps(payload).encode("utf-8"),
+            {
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json; charset=UTF-8",
+            },
+            "FCM",
+            attempts=3,
+        )
+        print(f"[OK] High-Priority FCM sent (seq={seq}, sha={commit_sha[:8]}, gz={len(gz_b64)}/{raw_gz_len}B): {body}")
+        return 0
+    except Exception as ex:
+        print(f"[ERROR] {ex}")
         return 1
 
 
