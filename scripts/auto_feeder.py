@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MaintenanceWorld VPN — Autonomous Cloud Hunter v6.0
+MaintenanceWorld VPN — Autonomous Cloud Hunter v6.1
 (Self-Evolving GitHub Source Discovery + Reputation Registry + Real 64KB Speed & CF WAF Probe
  + World-First Country Diversity + /24 Subnet Dedup + Non-EU 2-Gate AI Verification)
 - 100% backward compatible with MW VPN & MW Admin (vip_clean.txt + stats.txt).
@@ -94,6 +94,36 @@ SEED_FEEDS = [
     ("GLOBAL", "Radar-SS",    "https://radarhub.top/by-protocol/shadowsocks.txt", 150),
     ("GLOBAL", "Radar-Troj",  "https://radarhub.top/by-protocol/trojan.txt", 120),
     ("GLOBAL", "Radar-VMess", "https://radarhub.top/by-protocol/vmess.txt", 120),
+    ("NEAR", "Forge-QA",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/qa/all.txt", 90),
+    ("NEAR", "Forge-KW",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/kw/all.txt", 90),
+    ("NEAR", "Forge-JO",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/jo/all.txt", 90),
+    ("NEAR", "Forge-OM",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/om/all.txt", 90),
+    ("NEAR", "Forge-BH",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/bh/all.txt", 90),
+    ("EU",   "Forge-ES",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/es/all.txt", 100),
+    ("EU",   "Forge-PT",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/pt/all.txt", 90),
+    ("EU",   "Forge-CZ",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/cz/all.txt", 100),
+    ("EU",   "Forge-HU",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/hu/all.txt", 90),
+    ("EU",   "Forge-BE",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/be/all.txt", 90),
+    ("EU",   "Forge-DK",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/dk/all.txt", 90),
+    ("EU",   "Forge-NO",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/no/all.txt", 90),
+    ("EU",   "Forge-IE",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/ie/all.txt", 90),
+    ("EU",   "Forge-UA",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/ua/all.txt", 90),
+    ("EU",   "Forge-MD",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/md/all.txt", 90),
+    ("EU",   "Forge-RS",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/rs/all.txt", 90),
+    ("GLOBAL", "Forge-SG",    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/sg/all.txt", 110),
+    ("GLOBAL", "Forge-JP",    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/jp/all.txt", 110),
+    ("GLOBAL", "Forge-AU",    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/au/all.txt", 100),
+    ("GLOBAL", "Forge-BR",    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/br/all.txt", 100),
+    ("GLOBAL", "Forge-IN",    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/in/all.txt", 100),
+    ("GLOBAL", "Forge-KR",    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/kr/all.txt", 100),
+    ("GLOBAL", "Forge-TW",    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/tw/all.txt", 90),
+    ("GLOBAL", "Forge-TH",    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/th/all.txt", 90),
+    ("GLOBAL", "Forge-MY",    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/my/all.txt", 90),
+    ("GLOBAL", "Forge-ID",    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/id/all.txt", 90),
+    ("GLOBAL", "Forge-ZA",    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/za/all.txt", 90),
+    ("GLOBAL", "Forge-MX",    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/mx/all.txt", 90),
+    ("GLOBAL", "Forge-AR",    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/ar/all.txt", 90),
+    ("GLOBAL", "Forge-CL",    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/cl/all.txt", 90),
     ("GLOBAL", "Radar-VLESS", "https://radarhub.top/by-protocol/vless.txt", 120),
 ]
 
@@ -151,7 +181,7 @@ PREV_SOURCES_FILE = "prev_sources_state.json"
 MAX_PREV_CANDIDATES = 540
 MAX_NEAR_CANDIDATES = 620
 MAX_EU_CANDIDATES = 520
-MAX_GLOBAL_CANDIDATES = 720
+MAX_GLOBAL_CANDIDATES = 900
 
 MAX_FINAL_NODES = 480
 MIN_ACCEPTABLE_KBPS = 80
@@ -1094,6 +1124,7 @@ public final class RealExitVerifier {
                             || first.contains(" 451")) {
                         cfExplicitBlocked = true;
                     } else if (first.contains(" 200")) {
+                        tStart = System.nanoTime();
                         byte[] buf = new byte[8192];
                         int total = 0;
                         long deadline = System.currentTimeMillis() + (isNear ? 3600L : 2800L);
@@ -1142,6 +1173,7 @@ public final class RealExitVerifier {
                 BufferedInputStream bis = new BufferedInputStream(ssl.getInputStream(), 16384);
                 String hdr = readHeaderBlock(bis);
                 if (hdr != null && hdr.split("\r?\n", 2)[0].contains(" 200")) {
+                    tStart = System.nanoTime();
                     byte[] buf = new byte[8192];
                     int total = 0;
                     long deadline = System.currentTimeMillis() + (isNear ? 3600L : 2800L);
@@ -1997,7 +2029,7 @@ def run_self_test() -> int:
             f.write(JAVA_VERIFIER_SRC)
         subprocess.check_call([javac, "-Xlint:-options", "-encoding", "UTF-8", src_p], cwd=tmp_dir)
         subprocess.run([java, "-cp", tmp_dir, "RealExitVerifier"], input=b"", check=True, timeout=15)
-        print("[OK] اجتاز Cloud Hunter v6.0 الفحص الذاتي الأوفلاين (Self-Evolving + Registry + 64KB Speed + CF/AI + World-First) بـ 0 أخطاء!")
+        print("[OK] اجتاز Cloud Hunter v6.1 الفحص الذاتي الأوفلاين (Self-Evolving + Registry + 64KB Speed + CF/AI + World-First) بـ 0 أخطاء!")
         return 0
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
@@ -2121,7 +2153,7 @@ def main() -> int:
     candidates = prev_cands + near_cands + eu_cands + global_cands
 
     print(
-        f"[INFO] Cloud Hunter v6.0 verifying {len(candidates)} candidates "
+        f"[INFO] Cloud Hunter v6.1 verifying {len(candidates)} candidates "
         f"(Prev={len(prev_cands)}, Near={len(near_cands)}, EU={len(eu_cands)}, Global={len(global_cands)}) "
         f"from {len(active_feeds)} active feeds (auto={len(auto_sources)}, new_auto={newly_discovered_sources}, quarantined={quarantined_count})."
     )
@@ -2141,14 +2173,13 @@ def main() -> int:
     verified_fps = set()
 
     if java_res is not None:
+        raw_by_cc = {}
         for idx, (cc, rtt_ms, ai_ok, cf_ok, kbps) in java_res.items():
             node = candidates[idx]
             if cc in BLOCKED_COUNTRIES:
                 blocked_dropped += 1
                 continue
-            # Drop confirmed heavily-throttled servers (< 80 KB/s), except ultra-rare NEAR/MENA (> 45 KB/s)
-            min_speed = 45 if cc in NEAR_LOW_PING_COUNTRIES else MIN_ACCEPTABLE_KBPS
-            if kbps > 0 and kbps < min_speed:
+            if kbps > 0 and kbps < 20:
                 slow_dropped += 1
                 continue
             if node.get("hint_bucket") == "NEAR" and cc not in NEAR_LOW_PING_COUNTRIES:
@@ -2156,7 +2187,6 @@ def main() -> int:
             fp = node_fingerprint(node)
             old_reg = prev_registry.get(fp, {})
             streak = int(old_reg.get("streak", 0)) + 1
-
             node["fp"] = fp
             node["real_cc"] = cc
             node["rtt"] = rtt_ms
@@ -2165,12 +2195,30 @@ def main() -> int:
             node["kbps"] = kbps
             node["streak"] = streak
             node["uri"] = rewrite_clean_uri_tag(node["uri"], cc, rtt_ms, ai_ok, cf_ok)
-            verified_fps.add(fp)
-            if node.get("is_prev"):
-                kept_from_prev += 1
+            raw_by_cc.setdefault(cc, []).append(node)
+
+        for cc, cc_nodes in raw_by_cc.items():
+            min_speed = 45 if cc in NEAR_LOW_PING_COUNTRIES else MIN_ACCEPTABLE_KBPS
+            fast_list = [n for n in cc_nodes if n["kbps"] == 0 or n["kbps"] >= min_speed]
+            slow_list = sorted(
+                [n for n in cc_nodes if 0 < n["kbps"] < min_speed],
+                key=lambda x: (-x["kbps"], x["rtt"]),
+            )
+            kept_list = list(fast_list)
+            # Protect rare countries: rescue up to 2 best nodes (>= 20 KB/s) so countries never vanish
+            if len(kept_list) < 2 and slow_list:
+                need = 2 - len(kept_list)
+                kept_list.extend(slow_list[:need])
+                slow_dropped += max(0, len(slow_list) - need)
             else:
-                newly_verified += 1
-            verified.append(node)
+                slow_dropped += len(slow_list)
+            for node in kept_list:
+                verified_fps.add(node["fp"])
+                if node.get("is_prev"):
+                    kept_from_prev += 1
+                else:
+                    newly_verified += 1
+                verified.append(node)
     else:
         mode_label = "Python Fallback (TCP+TLS)"
         with concurrent.futures.ThreadPoolExecutor(max_workers=64) as ex:
@@ -2384,7 +2432,7 @@ def main() -> int:
 
     lines = [
         "==========================================================",
-        f"MaintenanceWorld VPN — Cloud Hunter Stats (v6.0 {mode_label})",
+        f"MaintenanceWorld VPN — Cloud Hunter Stats (v6.1 {mode_label})",
         f"Updated: {now_utc} | Scan Duration: {elapsed}s",
         f"Candidates: {len(candidates)} | Real-Verified: {len(verified)} | Published: {len(ordered_final)} | Countries: {len(cc_counts)} | AI-Clean: {ai_published} | CF-Clean: {cf_published}",
         f"Reputation: Prev-Kept={kept_from_prev} | Golden-Grace={grace_kept} | Dead-Purged={dead_prev} | Newly-Found={newly_verified}",
