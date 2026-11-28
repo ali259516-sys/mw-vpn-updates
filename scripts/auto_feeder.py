@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MaintenanceWorld VPN — Cloud Auto Feeder v5.1
+MaintenanceWorld VPN — Cloud Auto Feeder v5.2
 (Persistent Accumulator + Real-Ping Levant/MENA/EU Tiering + 2-Gate Non-EU AI-Clean)
 - Accumulates live verified servers from prev_vip_clean.txt across hourly runs and drops dead ones.
 - Prioritizes geographically closest regions to Syria/MENA for lowest real client ping
@@ -1174,6 +1174,61 @@ public final class RealExitVerifier {
         }
     }
 
+    private static boolean queryCloudflareWafCleanViaProxy(String[] f) {
+        Socket proxy = null;
+        SSLSocket ssl = null;
+        try {
+            String ip = resolvePublicIpv4(f[2]);
+            if (ip == null) return false;
+            int[] dummyRtt = {0};
+            boolean isNear = f.length >= 10 && "NEAR".equals(f[9]);
+            String host = "www.cloudflare.com";
+            proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], host, 443, dummyRtt, isNear);
+            if (proxy == null) return false;
+            ssl = wrapStrictTls(proxy, host, 443, isNear ? 3800 : 3000);
+            OutputStream out = ssl.getOutputStream();
+            out.write(("GET /robots.txt HTTP/1.1\r\n"
+                    + "Host: " + host + "\r\n"
+                    + "User-Agent: Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36\r\n"
+                    + "Accept-Encoding: identity\r\n"
+                    + "Connection: close\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
+            out.flush();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
+            byte[] buf = new byte[1024];
+            InputStream in = ssl.getInputStream();
+            long rdDeadline = System.currentTimeMillis() + 3000L;
+            try {
+                while (baos.size() < 4096 && System.currentTimeMillis() < rdDeadline) {
+                    int r = in.read(buf);
+                    if (r <= 0) break;
+                    baos.write(buf, 0, r);
+                    if (baos.size() >= 512) {
+                        String cur = new String(baos.toByteArray(), StandardCharsets.US_ASCII);
+                        if (cur.contains("\r\n\r\n")) break;
+                    }
+                }
+            } catch (Throwable ignored) {}
+            if (baos.size() == 0) return false;
+            String lower = new String(baos.toByteArray(), StandardCharsets.UTF_8).toLowerCase(Locale.ROOT);
+            String first = lower.split("\r?\n", 2)[0];
+            if (lower.contains("cf-mitigated:")
+                    || lower.contains("attention required")
+                    || lower.contains("why have i been blocked")
+                    || first.contains(" 403")
+                    || first.contains(" 503")
+                    || first.contains(" 429")
+                    || first.contains(" 451")) {
+                return false;
+            }
+            return first.contains(" 200") || first.contains(" 301") || first.contains(" 302");
+        } catch (Throwable ignored) {
+            return false;
+        } finally {
+            try { if (ssl != null) ssl.close(); } catch (Throwable ignored) {}
+            try { if (proxy != null) proxy.close(); } catch (Throwable ignored) {}
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         SSLContext ctx = SSLContext.getInstance("TLS");
         ctx.init(null, null, null);
@@ -1199,6 +1254,7 @@ public final class RealExitVerifier {
         });
         final Object outLock = new Object();
         final AtomicInteger aiProbes = new AtomicInteger(0);
+        final AtomicInteger cfProbes = new AtomicInteger(0);
         final CountDownLatch latch = new CountDownLatch(rows.size());
         final long deadlineNs = System.nanoTime() + TimeUnit.SECONDS.toNanos(235);
         final long aiDeadlineNs = System.nanoTime() + TimeUnit.SECONDS.toNanos(205);
@@ -1230,8 +1286,16 @@ public final class RealExitVerifier {
                                     aiOk = 1;
                                 }
                             }
+                            int cfOk = 0;
+                            if (!BLOCKED_CC.contains(cc)
+                                    && System.nanoTime() < aiDeadlineNs
+                                    && cfProbes.incrementAndGet() <= 380) {
+                                if (queryCloudflareWafCleanViaProxy(f)) {
+                                    cfOk = 1;
+                                }
+                            }
                             synchronized (outLock) {
-                                System.out.println("OK\t" + f[0] + "\t" + cc + "\t" + rtt[0] + "\t" + aiOk);
+                                System.out.println("OK\t" + f[0] + "\t" + cc + "\t" + rtt[0] + "\t" + aiOk + "\t" + cfOk);
                                 System.out.flush();
                             }
                         }
@@ -1588,8 +1652,9 @@ def verify_candidates_java_real_exit(candidates):
                     cc = parts[2].strip().upper()
                     rtt = int(parts[3])
                     ai_ok = (len(parts) >= 5 and parts[4].strip() == "1")
+                    cf_ok = (len(parts) >= 6 and parts[5].strip() == "1")
                     if len(cc) == 2 and rtt > 0:
-                        results[idx] = (cc, rtt, ai_ok)
+                        results[idx] = (cc, rtt, ai_ok, cf_ok)
                 except Exception:
                     pass
         return results
@@ -1638,11 +1703,11 @@ def verify_node_python_fallback(node: dict):
                 except Exception: pass
 
 
-def rewrite_clean_uri_tag(uri: str, real_cc: str, rtt_ms: int, ai_ok: bool) -> str:
+def rewrite_clean_uri_tag(uri: str, real_cc: str, rtt_ms: int, ai_ok: bool, cf_ok: bool = False) -> str:
     if not real_cc or len(real_cc) != 2 or real_cc == "UN":
         return uri
     base = uri.rsplit("#", 1)[0] if "#" in uri else uri
-    suffix = "|AI" if ai_ok else ""
+    suffix = ("|AI" if ai_ok else "") + ("|CF" if cf_ok else "")
     return f"{base}#MW-{real_cc}-{rtt_ms}ms{suffix}"
 
 
@@ -1659,7 +1724,7 @@ def run_self_test() -> int:
             f.write(JAVA_VERIFIER_SRC)
         subprocess.check_call([javac, "-Xlint:-options", "-encoding", "UTF-8", src_p], cwd=tmp_dir)
         subprocess.run([java, "-cp", tmp_dir, "RealExitVerifier"], input=b"", check=True, timeout=15)
-        print("[OK] اجتاز auto_feeder.py v5.1 الفحص الذاتي الأوفلاين (Accumulator + Low-Ping Tiering + Java Verifier) بـ 0 أخطاء!")
+        print("[OK] اجتاز auto_feeder.py v5.2 الفحص الذاتي الأوفلاين (Accumulator + Low-Ping Tiering + Java Verifier) بـ 0 أخطاء!")
         return 0
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
@@ -1733,7 +1798,7 @@ def main() -> int:
 
     java_res = verify_candidates_java_real_exit(candidates)
     if java_res is not None:
-        for idx, (cc, rtt_ms, ai_ok) in java_res.items():
+        for idx, (cc, rtt_ms, ai_ok, cf_ok) in java_res.items():
             node = candidates[idx]
             if cc in BLOCKED_COUNTRIES:
                 blocked_dropped += 1
@@ -1743,7 +1808,8 @@ def main() -> int:
             node["real_cc"] = cc
             node["rtt"] = rtt_ms
             node["ai_ok"] = ai_ok
-            node["uri"] = rewrite_clean_uri_tag(node["uri"], cc, rtt_ms, ai_ok)
+            node["cf_ok"] = cf_ok
+            node["uri"] = rewrite_clean_uri_tag(node["uri"], cc, rtt_ms, ai_ok, cf_ok)
             if node.get("is_prev"):
                 kept_from_prev += 1
             else:
@@ -1761,6 +1827,7 @@ def main() -> int:
     def low_ping_sort_key(n):
         direct_pen = 0 if n.get("direct") else 40
         return (
+            0 if n.get("cf_ok") else 1,
             0 if n.get("direct") else 1,
             proto_priority.get(n["proto"], 4),
             n["rtt"] + direct_pen,
@@ -1872,7 +1939,7 @@ def main() -> int:
 
     lines = [
         "==========================================================",
-        f"MaintenanceWorld VPN — Cloud Accumulator Stats (v5.1 {mode_label})",
+        f"MaintenanceWorld VPN — Cloud Accumulator Stats (v5.2 {mode_label})",
         f"Updated: {now_utc} | Scan Duration: {elapsed}s",
         f"Candidates: {len(candidates)} | Real-Verified: {len(verified)} | Published: {len(final_nodes)} | Countries: {len(cc_counts)} | AI-Clean: {ai_published}",
         f"Accumulator: Prev-Kept={kept_from_prev} | Prev-Dead-Purged={dead_prev} | Newly-Found={newly_verified}",
