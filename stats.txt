@@ -1,0 +1,81 @@
+==========================================================
+MaintenanceWorld VPN — Cloud Hunter Stats (v6.0 Autonomous Hunter + 64KB Speed + CF/AI (Java Engine))
+Updated: 2026-11-28 11:40 UTC | Scan Duration: 103.7s
+Candidates: 1540 | Real-Verified: 365 | Published: 205 | Countries: 23 | AI-Clean: 97 | CF-Clean: 170
+Reputation: Prev-Kept=170 | Golden-Grace=0 | Dead-Purged=37 | Newly-Found=195
+Sources: Active=78 | Auto-Discovered=11 (+4) | Quarantined=0
+Tier-0 Near/MENA Published: 3 (AE=2, TR=1)
+Tier-1 Europe Published: 69 | Filtered: Blocked-CC=0 | Slow-Drop=86 | Fake-Near=27
+Performance: RTT min=1ms avg=110ms | Real Speed avg=242 KB/s (tested=170)
+Protocols: SS-AEAD=135, TROJAN-TLS=1, VLESS-TLS=18, VMESS-AEAD=10, VMESS-TLS=41
+Top Exit Countries: US=60, JP=42, FR=17, CA=12, DE=11, GB=11, SG=10, NL=10, IT=5, SE=4, KR=3, CH=3, ES=3, AE=2, BR=2, AT=2, PL=2, TR=1, AU=1, IN=1, TW=1, ZA=1, NO=1
+==========================================================
+Source Breakdown (parsed / unique):
+  - Forge-AE      : 160 parsed /  83 unique
+  - Forge-TR      : 160 parsed /  77 unique
+  - Forge-CY      :  82 parsed /  24 unique
+  - Forge-BG      : 120 parsed /   4 unique
+  - Forge-RO      : 120 parsed /   3 unique
+  - OpenRay-AE    :  16 parsed /  14 unique
+  - OpenRay-TR    :   4 parsed /   2 unique
+  - OpenRay-RO    :   1 parsed /   1 unique
+  - Soli-AE       :  17 parsed /  13 unique
+  - Soli-BG       :   4 parsed /   3 unique
+  - Soli-RO       :   3 parsed /   2 unique
+  - Soli-AM       :   2 parsed /   2 unique
+  - v2go-AE       :   2 parsed /   0 unique
+  - v2go-TR       :   1 parsed /   0 unique
+  - Forge-IT      : 120 parsed /  12 unique
+  - Forge-DE      : 120 parsed /   2 unique
+  - Forge-AT      : 100 parsed /   1 unique
+  - Forge-CH      : 100 parsed /   0 unique
+  - Forge-FR      : 120 parsed /   0 unique
+  - Forge-NL      : 120 parsed /   0 unique
+  - Forge-GB      : 100 parsed /   0 unique
+  - Forge-PL      : 100 parsed /   0 unique
+  - v2go-DE       :  10 parsed /   5 unique
+  - v2go-FR       :  20 parsed /   0 unique
+  - v2go-NL       :  63 parsed /  58 unique
+  - v2go-GB       :  15 parsed /   3 unique
+  - v2go-SE       :   4 parsed /   1 unique
+  - Soli-DE       : 120 parsed /  88 unique
+  - Soli-IT       :   9 parsed /   8 unique
+  - Soli-FR       : 100 parsed /  51 unique
+  - v2go-US       :  82 parsed /  27 unique
+  - v2go-CA       :  14 parsed /   1 unique
+  - v2go-SG       :  12 parsed /   1 unique
+  - v2go-JP       :  30 parsed /   9 unique
+  - v2go-BR       :   6 parsed /   2 unique
+  - v2go-KR       :   4 parsed /   2 unique
+  - v2go-IN       :   1 parsed /   0 unique
+  - v2go-SS       : 160 parsed /  18 unique
+  - v2go-VMess    :  49 parsed /   6 unique
+  - v2go-Trojan   :   2 parsed /   2 unique
+  - Radikal-Top   :  77 parsed /   5 unique
+  - Radikal-Ver   : 180 parsed /  17 unique
+  - Au1rxx-Ver    : 180 parsed /  65 unique
+  - OpenRay-All   : 180 parsed / 130 unique
+  - Matin-SS      : 160 parsed / 149 unique
+  - Matin-Troj    : 120 parsed / 113 unique
+  - Matin-VMess   : 120 parsed / 100 unique
+  - Alirewa-1     :  65 parsed /  48 unique
+  - Morpheus      : 140 parsed / 125 unique
+  - CFY-Troj      :  42 parsed /  30 unique
+  - CFY-VMess     :  20 parsed /  10 unique
+  - Barry-SS      : 140 parsed /  32 unique
+  - Barry-Troj    : 120 parsed /  18 unique
+  - Radar-SS      : 150 parsed /  41 unique
+  - Radar-Troj    :  64 parsed /  30 unique
+  - Radar-VMess   : 120 parsed /   7 unique
+  - Radar-VLESS   : 120 parsed /  40 unique
+  - Auto-SolVPN   :  28 parsed /   2 unique
+  - Auto-SolVPN   :  10 parsed /   2 unique
+  - Auto-VPNLK.onli:  14 parsed /   0 unique
+  - Auto-V2HUBIR-Fr:  83 parsed /  62 unique
+  - Auto-Free-v2ray: 120 parsed /   0 unique
+  - Auto-Free-v2ray: 120 parsed /   0 unique
+  - Auto-free-nodes:  73 parsed /  11 unique
+  - Auto-SolVPN   :  11 parsed /   2 unique
+  - Auto-SolVPN   :  20 parsed /   1 unique
+  - Auto-Free-v2ray: 120 parsed /  43 unique
+  - Auto-Free-v2ray: 120 parsed /   0 unique

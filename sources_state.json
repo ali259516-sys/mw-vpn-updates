@@ -1,0 +1,430 @@
+{
+  "seed_health": {
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/ae/all.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/tr/all.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/cy/all.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/gr/all.txt": {
+      "zero_runs": 2,
+      "ok_runs": 0,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/bg/all.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/ro/all.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/sa/all.txt": {
+      "zero_runs": 2,
+      "ok_runs": 0,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/eg/all.txt": {
+      "zero_runs": 2,
+      "ok_runs": 0,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/country/AE.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/country/TR.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/country/BG.txt": {
+      "zero_runs": 2,
+      "ok_runs": 0,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/country/RO.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/country/GR.txt": {
+      "zero_runs": 2,
+      "ok_runs": 0,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/United_Arab_Emirates.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Turkey.txt": {
+      "zero_runs": 2,
+      "ok_runs": 0,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Bulgaria.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Romania.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Armenia.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/AE.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/TR.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/it/all.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/de/all.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/at/all.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/ch/all.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/fr/all.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/nl/all.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/gb/all.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/pl/all.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/DE.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/IT.txt": {
+      "zero_runs": 2,
+      "ok_runs": 0,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/FR.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/NL.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/GB.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/SE.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/FI.txt": {
+      "zero_runs": 2,
+      "ok_runs": 0,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Germany.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Italy.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/France.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Netherlands.txt": {
+      "zero_runs": 2,
+      "ok_runs": 0,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/US.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/CA.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/SG.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/JP.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/AU.txt": {
+      "zero_runs": 2,
+      "ok_runs": 0,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/BR.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/KR.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/IN.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Protocol/ss.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Protocol/vmess.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Protocol/trojan.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/0xRadikal/Free-v2ray-Configs@main/top100.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/0xRadikal/Free-v2ray-Configs@main/verified/configs_base64.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Au1rxx/free-vpn-subscriptions@main/output/all-verified/v2ray-base64-0001.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/sakha1370/OpenRay@main/output/all_valid_proxies.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/MatinGhanbari/v2ray-configs@main/subscriptions/filtered/subs/ss.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/MatinGhanbari/v2ray-configs@main/subscriptions/filtered/subs/trojan.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/MatinGhanbari/v2ray-configs@main/subscriptions/filtered/subs/vmess.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/Alirewa/V2ray-Configs@main/sub1.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://raw.githubusercontent.com/morpheusadam/v2ray-config/main/subs/bundles/best.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/mohammadaz2/v2rayConfigsForYou@main/sub/trojan.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/mohammadaz2/v2rayConfigsForYou@main/sub/vmess.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/barry-far/V2ray-Config@main/Splitted-By-Protocol/ss.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/barry-far/V2ray-Config@main/Splitted-By-Protocol/trojan.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://radarhub.top/by-protocol/shadowsocks.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://radarhub.top/by-protocol/trojan.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://radarhub.top/by-protocol/vmess.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://radarhub.top/by-protocol/vless.txt": {
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    }
+  },
+  "auto_sources": {
+    "https://cdn.jsdelivr.net/gh/SoliSpirit/SolVPN@main/Protocols/shadowsocks.txt": {
+      "name": "Auto-SolVPN",
+      "bucket": "GLOBAL",
+      "added_ts": 1795865703,
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/SoliSpirit/SolVPN@main/Protocols/trojan.txt": {
+      "name": "Auto-SolVPN",
+      "bucket": "GLOBAL",
+      "added_ts": 1795865703,
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/VPNLK-online/VPNLK.online@main/configs/vmess.txt": {
+      "name": "Auto-VPNLK.onli",
+      "bucket": "GLOBAL",
+      "added_ts": 1795865703,
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/V2HUBIR/V2HUBIR-Free-V2Ray-Configs-free-Sub@main/sub.txt": {
+      "name": "Auto-V2HUBIR-Fr",
+      "bucket": "GLOBAL",
+      "added_ts": 1795865703,
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/0xRadikal/Free-v2ray-Configs@main/fast/configs.txt": {
+      "name": "Auto-Free-v2ray",
+      "bucket": "GLOBAL",
+      "added_ts": 1795865703,
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/0xRadikal/Free-v2ray-Configs@main/google/configs.txt": {
+      "name": "Auto-Free-v2ray",
+      "bucket": "GLOBAL",
+      "added_ts": 1795865703,
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/haiwanai/free-nodes@main/sub.txt": {
+      "name": "Auto-free-nodes",
+      "bucket": "GLOBAL",
+      "added_ts": 1795865703,
+      "zero_runs": 0,
+      "ok_runs": 2,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/SoliSpirit/SolVPN@main/Protocols/vless.txt": {
+      "name": "Auto-SolVPN",
+      "bucket": "GLOBAL",
+      "added_ts": 1795865931,
+      "zero_runs": 0,
+      "ok_runs": 1,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/SoliSpirit/SolVPN@main/Protocols/vmess.txt": {
+      "name": "Auto-SolVPN",
+      "bucket": "GLOBAL",
+      "added_ts": 1795865931,
+      "zero_runs": 0,
+      "ok_runs": 1,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/0xRadikal/Free-v2ray-Configs@main/heavy/configs.txt": {
+      "name": "Auto-Free-v2ray",
+      "bucket": "GLOBAL",
+      "added_ts": 1795865931,
+      "zero_runs": 0,
+      "ok_runs": 1,
+      "quarantine_until": 0
+    },
+    "https://cdn.jsdelivr.net/gh/0xRadikal/Free-v2ray-Configs@main/protocols/shadowsocks.txt": {
+      "name": "Auto-Free-v2ray",
+      "bucket": "GLOBAL",
+      "added_ts": 1795865931,
+      "zero_runs": 0,
+      "ok_runs": 1,
+      "quarantine_until": 0
+    }
+  },
+  "last_discovery_ts": 1795865931
+}
