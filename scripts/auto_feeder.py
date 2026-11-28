@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 """
-MaintenanceWorld VPN — Cloud Auto Feeder v5.2
-(Persistent Accumulator + Real-Ping Levant/MENA/EU Tiering + 2-Gate Non-EU AI-Clean)
-- Accumulates live verified servers from prev_vip_clean.txt across hourly runs and drops dead ones.
-- Prioritizes geographically closest regions to Syria/MENA for lowest real client ping
-  instead of US-runner RTT bias:
-    Tier 0 (Near MENA & Balkans): CY, TR, LB, JO, EG, AE, SA, QA, KW, BH, OM, GR, BG, RO, GE, AM, AZ
-    Tier 1 (Central/Med Europe):  IT, AT, DE, HU, CZ, CH, FR, NL, GB, PL, SE, FI, ES, ...
-    Tier 2 (Global + |AI Bridge): US, CA, SG, JP, KR, AU, ...
-- Publishes up to 480 clean Real-Exit-IP verified nodes with direct-protocol preference.
+MaintenanceWorld VPN — Autonomous Cloud Hunter v6.0
+(Self-Evolving GitHub Source Discovery + Reputation Registry + Real 64KB Speed & CF WAF Probe
+ + World-First Country Diversity + /24 Subnet Dedup + Non-EU 2-Gate AI Verification)
+- 100% backward compatible with MW VPN & MW Admin (vip_clean.txt + stats.txt).
+- Persists reputation in registry.json and source health in sources_state.json on feeds branch.
 """
 
 import base64
@@ -24,10 +20,11 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
-FEEDS = [
+SEED_FEEDS = [
     # --- Tier 0: Middle East & Near-Mediterranean Low-Ping Feeds ---
     ("NEAR", "Forge-AE",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/ae/all.txt", 160),
     ("NEAR", "Forge-TR",      "https://cdn.jsdelivr.net/gh/ShatakVPN/ConfigForge-V2Ray@main/configs/tr/all.txt", 160),
@@ -69,11 +66,15 @@ FEEDS = [
     ("EU",   "Soli-IT",       "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Italy.txt", 100),
     ("EU",   "Soli-FR",       "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/France.txt", 100),
     ("EU",   "Soli-NL",       "https://cdn.jsdelivr.net/gh/SoliSpirit/v2ray-configs@main/Countries/Netherlands.txt", 100),
-    # --- Tier 2: High-Yield Global & AI-Bridge Verified Pools ---
+    # --- Tier 2: Global Multi-Continent & Verified Pools ---
     ("GLOBAL", "v2go-US",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/US.txt", 140),
     ("GLOBAL", "v2go-CA",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/CA.txt", 100),
     ("GLOBAL", "v2go-SG",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/SG.txt", 100),
     ("GLOBAL", "v2go-JP",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/JP.txt", 100),
+    ("GLOBAL", "v2go-AU",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/AU.txt", 90),
+    ("GLOBAL", "v2go-BR",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/BR.txt", 90),
+    ("GLOBAL", "v2go-KR",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/KR.txt", 90),
+    ("GLOBAL", "v2go-IN",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Country/IN.txt", 90),
     ("GLOBAL", "v2go-SS",     "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Protocol/ss.txt", 160),
     ("GLOBAL", "v2go-VMess",  "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Protocol/vmess.txt", 140),
     ("GLOBAL", "v2go-Trojan", "https://cdn.jsdelivr.net/gh/Danialsamadi/v2go@main/Splitted-By-Protocol/trojan.txt", 120),
@@ -96,13 +97,11 @@ FEEDS = [
     ("GLOBAL", "Radar-VLESS", "https://radarhub.top/by-protocol/vless.txt", 120),
 ]
 
-# Tier 0: Closest geographic neighbors to Syria / Levant (lowest real ping ~45-105ms)
 NEAR_LOW_PING_COUNTRIES = {
     "CY", "TR", "LB", "JO", "EG", "AE", "SA", "QA", "KW", "BH", "OM",
     "GE", "AM", "AZ", "GR", "BG", "RO",
 }
 
-# Tier 1: Central / Mediterranean / Western Europe (real ping ~80-140ms)
 EU_LOW_PING_COUNTRIES = {
     "IT", "AT", "DE", "HU", "CZ", "SK", "SI", "HR", "RS", "AL", "BA", "MK", "ME", "MT",
     "CH", "PL", "FR", "NL", "BE", "LU", "GB", "IE", "ES", "PT",
@@ -146,23 +145,32 @@ IPV4_RE = re.compile(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
 UUID_HEX_RE = re.compile(r"^[0-9a-fA-F]{32}$")
 
 PREV_FEED_FILE = "prev_vip_clean.txt"
-MAX_PREV_CANDIDATES = 500
-MAX_NEAR_CANDIDATES = 600
-MAX_EU_CANDIDATES = 550
-MAX_GLOBAL_CANDIDATES = 650
+PREV_REGISTRY_FILE = "prev_registry.json"
+PREV_SOURCES_FILE = "prev_sources_state.json"
+
+MAX_PREV_CANDIDATES = 540
+MAX_NEAR_CANDIDATES = 620
+MAX_EU_CANDIDATES = 520
+MAX_GLOBAL_CANDIDATES = 720
 
 MAX_FINAL_NODES = 480
-NEAR_RESERVED_SLOTS = 160
-AI_BRIDGE_RESERVED_SLOTS = 32
-EU_RESERVED_SLOTS = 220
-EU_COUNTRY_CAP = 24
-US_COUNTRY_CAP = 45
+MIN_ACCEPTABLE_KBPS = 80
+NEAR_RESERVED_SLOTS = 140
+AI_BRIDGE_RESERVED_SLOTS = 36
+EU_RESERVED_SLOTS = 180
+EU_COUNTRY_CAP = 20
+US_COUNTRY_CAP = 42
 OTHER_COUNTRY_CAP = 16
-MAX_PER_HOST_NEAR = 4
-MAX_PER_HOST_EU = 2
-MAX_PER_HOST_GLOBAL = 2
+MAX_PER_SUBNET_NEAR = 3
+MAX_PER_SUBNET_GLOBAL = 2
+MAX_PER_HOST_NEAR = 2
+MAX_PER_HOST_GLOBAL = 1
 
-# Self-contained Zero-Dependency Java 8+ Real Tunnel Exit-IP + 2-Gate Non-EU AI Verifier
+MAX_AUTO_DISCOVERED_SOURCES = 42
+DISCOVERY_INTERVAL_SEC = 6 * 3600
+SOURCE_QUARANTINE_SEC = 24 * 3600
+
+# Self-contained Zero-Dependency Java 8+ Real Tunnel Exit-IP + 64KB Speed + CF WAF + 2-Gate Fair AI Verifier
 JAVA_VERIFIER_SRC = r"""
 import java.io.*;
 import java.net.*;
@@ -1050,6 +1058,152 @@ public final class RealExitVerifier {
         }
     }
 
+    // Combined Real 64KB Speed Micro-Probe + Cloudflare WAF Cleanliness Check (1 TLS round-trip!)
+    // Returns int[2]: [0] = speedKBps (0 if failed), [1] = cfClean (1 or 0)
+    private static int[] querySpeedAndCfViaProxy(String[] f) {
+        int[] out = {0, 0};
+        boolean cfExplicitBlocked = false;
+        Socket proxy = null;
+        SSLSocket ssl = null;
+        try {
+            String ip = resolvePublicIpv4(f[2]);
+            if (ip == null) return out;
+            int[] dummyRtt = {0};
+            boolean isNear = f.length >= 10 && "NEAR".equals(f[9]);
+            String host = "speed.cloudflare.com";
+            proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], host, 443, dummyRtt, isNear);
+            if (proxy != null) {
+                ssl = wrapStrictTls(proxy, host, 443, isNear ? 3800 : 3000);
+                OutputStream os = ssl.getOutputStream();
+                long tStart = System.nanoTime();
+                os.write(("GET /__down?bytes=65536 HTTP/1.1\r\n"
+                        + "Host: " + host + "\r\n"
+                        + "User-Agent: Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36\r\n"
+                        + "Accept-Encoding: identity\r\n"
+                        + "Connection: close\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
+                os.flush();
+                BufferedInputStream bis = new BufferedInputStream(ssl.getInputStream(), 16384);
+                String hdr = readHeaderBlock(bis);
+                if (hdr != null && !hdr.isEmpty()) {
+                    String lowerH = hdr.toLowerCase(Locale.ROOT);
+                    String first = lowerH.split("\r?\n", 2)[0];
+                    if (lowerH.contains("cf-mitigated:")
+                            || first.contains(" 403")
+                            || first.contains(" 503")
+                            || first.contains(" 429")
+                            || first.contains(" 451")) {
+                        cfExplicitBlocked = true;
+                    } else if (first.contains(" 200")) {
+                        byte[] buf = new byte[8192];
+                        int total = 0;
+                        long deadline = System.currentTimeMillis() + (isNear ? 3600L : 2800L);
+                        try {
+                            while (total < 65536 && System.currentTimeMillis() < deadline) {
+                                int r = bis.read(buf);
+                                if (r <= 0) break;
+                                total += r;
+                            }
+                        } catch (Throwable ignored) {}
+                        long durMs = Math.max(15L, (System.nanoTime() - tStart) / 1_000_000L);
+                        if (total >= 16384) {
+                            out[0] = (int) Math.max(1L, (total * 1000L) / (durMs * 1024L));
+                            out[1] = 1;
+                            return out;
+                        }
+                    }
+                }
+            }
+        } catch (Throwable ignored) {
+        } finally {
+            try { if (ssl != null) ssl.close(); } catch (Throwable ignored) {}
+            try { if (proxy != null) proxy.close(); } catch (Throwable ignored) {}
+        }
+
+        // Fallback Bandwidth Probe via jsDelivr CDN (if speed.cloudflare.com failed or blocked)
+        proxy = null;
+        ssl = null;
+        try {
+            String ip = resolvePublicIpv4(f[2]);
+            if (ip == null) return out;
+            int[] dummyRtt = {0};
+            boolean isNear = f.length >= 10 && "NEAR".equals(f[9]);
+            String host = "cdn.jsdelivr.net";
+            proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], host, 443, dummyRtt, isNear);
+            if (proxy != null) {
+                ssl = wrapStrictTls(proxy, host, 443, isNear ? 3800 : 3000);
+                OutputStream os = ssl.getOutputStream();
+                long tStart = System.nanoTime();
+                os.write(("GET /npm/jquery@3.7.1/dist/jquery.min.js HTTP/1.1\r\n"
+                        + "Host: " + host + "\r\n"
+                        + "User-Agent: Mozilla/5.0\r\n"
+                        + "Accept-Encoding: identity\r\n"
+                        + "Connection: close\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
+                os.flush();
+                BufferedInputStream bis = new BufferedInputStream(ssl.getInputStream(), 16384);
+                String hdr = readHeaderBlock(bis);
+                if (hdr != null && hdr.split("\r?\n", 2)[0].contains(" 200")) {
+                    byte[] buf = new byte[8192];
+                    int total = 0;
+                    long deadline = System.currentTimeMillis() + (isNear ? 3600L : 2800L);
+                    try {
+                        while (total < 65536 && System.currentTimeMillis() < deadline) {
+                            int r = bis.read(buf);
+                            if (r <= 0) break;
+                            total += r;
+                        }
+                    } catch (Throwable ignored) {}
+                    long durMs = Math.max(15L, (System.nanoTime() - tStart) / 1_000_000L);
+                    if (total >= 16384) {
+                        out[0] = (int) Math.max(1L, (total * 1000L) / (durMs * 1024L));
+                    }
+                }
+            }
+        } catch (Throwable ignored) {
+        } finally {
+            try { if (ssl != null) ssl.close(); } catch (Throwable ignored) {}
+            try { if (proxy != null) proxy.close(); } catch (Throwable ignored) {}
+        }
+
+        if (!cfExplicitBlocked && out[0] > 0 && out[1] == 0) {
+            if (queryCloudflareRobotsViaProxy(f)) {
+                out[1] = 1;
+            }
+        }
+        return out;
+    }
+
+    private static boolean queryCloudflareRobotsViaProxy(String[] f) {
+        Socket proxy = null;
+        SSLSocket ssl = null;
+        try {
+            String ip = resolvePublicIpv4(f[2]);
+            if (ip == null) return false;
+            int[] dummyRtt = {0};
+            boolean isNear = f.length >= 10 && "NEAR".equals(f[9]);
+            String host = "www.cloudflare.com";
+            proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], host, 443, dummyRtt, isNear);
+            if (proxy == null) return false;
+            ssl = wrapStrictTls(proxy, host, 443, 3000);
+            OutputStream out = ssl.getOutputStream();
+            out.write(("GET /robots.txt HTTP/1.1\r\nHost: " + host + "\r\nUser-Agent: Mozilla/5.0\r\nAccept-Encoding: identity\r\nConnection: close\r\n\r\n")
+                    .getBytes(StandardCharsets.US_ASCII));
+            out.flush();
+            String hdr = readHeaderBlock(new BufferedInputStream(ssl.getInputStream(), 2048));
+            if (hdr == null) return false;
+            String low = hdr.toLowerCase(Locale.ROOT);
+            String first = low.split("\r?\n", 2)[0];
+            if (low.contains("cf-mitigated:") || first.contains(" 403") || first.contains(" 503") || first.contains(" 429")) {
+                return false;
+            }
+            return first.contains(" 200") || first.contains(" 301") || first.contains(" 302");
+        } catch (Throwable ignored) {
+            return false;
+        } finally {
+            try { if (ssl != null) ssl.close(); } catch (Throwable ignored) {}
+            try { if (proxy != null) proxy.close(); } catch (Throwable ignored) {}
+        }
+    }
+
     private static boolean queryGeminiApiCleanViaProxy(String[] f) {
         Socket proxy = null;
         SSLSocket ssl = null;
@@ -1057,8 +1211,8 @@ public final class RealExitVerifier {
             String ip = resolvePublicIpv4(f[2]);
             if (ip == null) return false;
             int[] dummyRtt = {0};
-            String host = "generativelanguage.googleapis.com";
             boolean isNear = f.length >= 10 && "NEAR".equals(f[9]);
+            String host = "generativelanguage.googleapis.com";
             proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], host, 443, dummyRtt, isNear);
             if (proxy == null) return false;
             ssl = wrapStrictTls(proxy, host, 443, 3800);
@@ -1117,8 +1271,8 @@ public final class RealExitVerifier {
             String ip = resolvePublicIpv4(f[2]);
             if (ip == null) return false;
             int[] dummyRtt = {0};
-            String host = "gemini.google.com";
             boolean isNear = f.length >= 10 && "NEAR".equals(f[9]);
+            String host = "gemini.google.com";
             proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], host, 443, dummyRtt, isNear);
             if (proxy == null) return false;
             ssl = wrapStrictTls(proxy, host, 443, 3800);
@@ -1174,61 +1328,6 @@ public final class RealExitVerifier {
         }
     }
 
-    private static boolean queryCloudflareWafCleanViaProxy(String[] f) {
-        Socket proxy = null;
-        SSLSocket ssl = null;
-        try {
-            String ip = resolvePublicIpv4(f[2]);
-            if (ip == null) return false;
-            int[] dummyRtt = {0};
-            boolean isNear = f.length >= 10 && "NEAR".equals(f[9]);
-            String host = "www.cloudflare.com";
-            proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], host, 443, dummyRtt, isNear);
-            if (proxy == null) return false;
-            ssl = wrapStrictTls(proxy, host, 443, isNear ? 3800 : 3000);
-            OutputStream out = ssl.getOutputStream();
-            out.write(("GET /robots.txt HTTP/1.1\r\n"
-                    + "Host: " + host + "\r\n"
-                    + "User-Agent: Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36\r\n"
-                    + "Accept-Encoding: identity\r\n"
-                    + "Connection: close\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
-            out.flush();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(2048);
-            byte[] buf = new byte[1024];
-            InputStream in = ssl.getInputStream();
-            long rdDeadline = System.currentTimeMillis() + 3000L;
-            try {
-                while (baos.size() < 4096 && System.currentTimeMillis() < rdDeadline) {
-                    int r = in.read(buf);
-                    if (r <= 0) break;
-                    baos.write(buf, 0, r);
-                    if (baos.size() >= 512) {
-                        String cur = new String(baos.toByteArray(), StandardCharsets.US_ASCII);
-                        if (cur.contains("\r\n\r\n")) break;
-                    }
-                }
-            } catch (Throwable ignored) {}
-            if (baos.size() == 0) return false;
-            String lower = new String(baos.toByteArray(), StandardCharsets.UTF_8).toLowerCase(Locale.ROOT);
-            String first = lower.split("\r?\n", 2)[0];
-            if (lower.contains("cf-mitigated:")
-                    || lower.contains("attention required")
-                    || lower.contains("why have i been blocked")
-                    || first.contains(" 403")
-                    || first.contains(" 503")
-                    || first.contains(" 429")
-                    || first.contains(" 451")) {
-                return false;
-            }
-            return first.contains(" 200") || first.contains(" 301") || first.contains(" 302");
-        } catch (Throwable ignored) {
-            return false;
-        } finally {
-            try { if (ssl != null) ssl.close(); } catch (Throwable ignored) {}
-            try { if (proxy != null) proxy.close(); } catch (Throwable ignored) {}
-        }
-    }
-
     public static void main(String[] args) throws Exception {
         SSLContext ctx = SSLContext.getInstance("TLS");
         ctx.init(null, null, null);
@@ -1244,7 +1343,7 @@ public final class RealExitVerifier {
         }
         if (rows.isEmpty()) return;
 
-        int workers = Math.min(80, Math.max(8, rows.size()));
+        int workers = Math.min(88, Math.max(8, rows.size()));
         ExecutorService pool = Executors.newFixedThreadPool(workers, new ThreadFactory() {
             @Override public Thread newThread(Runnable r) {
                 Thread t = new Thread(r);
@@ -1253,11 +1352,12 @@ public final class RealExitVerifier {
             }
         });
         final Object outLock = new Object();
-        final AtomicInteger aiProbes = new AtomicInteger(0);
-        final AtomicInteger cfProbes = new AtomicInteger(0);
+        final AtomicInteger bwProbes = new AtomicInteger(0);
+        final AtomicInteger aiUsProbes = new AtomicInteger(0);
+        final AtomicInteger aiOtherProbes = new AtomicInteger(0);
         final CountDownLatch latch = new CountDownLatch(rows.size());
-        final long deadlineNs = System.nanoTime() + TimeUnit.SECONDS.toNanos(235);
-        final long aiDeadlineNs = System.nanoTime() + TimeUnit.SECONDS.toNanos(205);
+        final long deadlineNs = System.nanoTime() + TimeUnit.SECONDS.toNanos(255);
+        final long deepDeadlineNs = System.nanoTime() + TimeUnit.SECONDS.toNanos(220);
 
         for (final String[] f : rows) {
             pool.execute(new Runnable() {
@@ -1272,30 +1372,32 @@ public final class RealExitVerifier {
                         if (cc == null && System.nanoTime() < deadlineNs) {
                             cc = queryGeoViaProxy(f, "ipinfo.io", "/country", false, rtt);
                         }
-                        if (cc != null && rtt[0] > 0) {
+                        if (cc != null && rtt[0] > 0 && !BLOCKED_CC.contains(cc)) {
+                            int kbps = 0;
+                            int cfOk = 0;
+                            if (System.nanoTime() < deepDeadlineNs && bwProbes.incrementAndGet() <= 720) {
+                                int[] bwCf = querySpeedAndCfViaProxy(f);
+                                kbps = bwCf[0];
+                                cfOk = bwCf[1];
+                            }
+
                             int aiOk = 0;
-                            boolean aiRegionEligible = "US".equals(cc) || "CA".equals(cc)
-                                    || "SG".equals(cc) || "JP".equals(cc) || "AU".equals(cc)
-                                    || "AE".equals(cc) || "SA".equals(cc);
-                            if (aiRegionEligible
-                                    && !BLOCKED_CC.contains(cc)
-                                    && rtt[0] <= 380
-                                    && System.nanoTime() < aiDeadlineNs
-                                    && aiProbes.incrementAndGet() <= 180) {
-                                if (queryGeminiApiCleanViaProxy(f) && queryGeminiAppCleanViaProxy(f)) {
+                            boolean isUs = "US".equals(cc);
+                            boolean isOtherAiCc = "CA".equals(cc) || "SG".equals(cc) || "JP".equals(cc)
+                                    || "AU".equals(cc) || "AE".equals(cc) || "SA".equals(cc);
+                            if ((isUs || isOtherAiCc)
+                                    && rtt[0] <= 420
+                                    && (kbps == 0 || kbps >= 80)
+                                    && System.nanoTime() < deepDeadlineNs) {
+                                boolean quotaOk = isUs
+                                        ? (aiUsProbes.incrementAndGet() <= 90)
+                                        : (aiOtherProbes.incrementAndGet() <= 140);
+                                if (quotaOk && queryGeminiApiCleanViaProxy(f) && queryGeminiAppCleanViaProxy(f)) {
                                     aiOk = 1;
                                 }
                             }
-                            int cfOk = 0;
-                            if (!BLOCKED_CC.contains(cc)
-                                    && System.nanoTime() < aiDeadlineNs
-                                    && cfProbes.incrementAndGet() <= 380) {
-                                if (queryCloudflareWafCleanViaProxy(f)) {
-                                    cfOk = 1;
-                                }
-                            }
                             synchronized (outLock) {
-                                System.out.println("OK\t" + f[0] + "\t" + cc + "\t" + rtt[0] + "\t" + aiOk + "\t" + cfOk);
+                                System.out.println("OK\t" + f[0] + "\t" + cc + "\t" + rtt[0] + "\t" + aiOk + "\t" + cfOk + "\t" + kbps);
                                 System.out.flush();
                             }
                         }
@@ -1305,7 +1407,7 @@ public final class RealExitVerifier {
                 }
             });
         }
-        latch.await(240, TimeUnit.SECONDS);
+        latch.await(265, TimeUnit.SECONDS);
         pool.shutdownNow();
     }
 }
@@ -1362,6 +1464,18 @@ def is_public_host(host: str) -> bool:
 
 def sanitize_token(val: str) -> str:
     return (val or "").replace("\r", "").replace("\n", "").replace("\t", "").replace("\0", "").strip()
+
+
+def node_fingerprint(n: dict) -> str:
+    return f"{n['j_proto']}|{n['host'].lower()}|{n['port']}|{n['sni'].lower()}|{n['ws_path']}"
+
+
+def subnet24_key(host: str) -> str:
+    h = (host or "").lower().strip()
+    if IPV4_RE.match(h):
+        parts = h.split(".")
+        return f"{parts[0]}.{parts[1]}.{parts[2]}"
+    return h
 
 
 def classify_hint_bucket(line: str, feed_bucket: str) -> str:
@@ -1560,6 +1674,124 @@ def parse_compatible_node(line: str):
     return None
 
 
+def load_json_safe(path: str, default):
+    if not os.path.isfile(path):
+        return default
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return default
+
+
+def load_admin_feeds_from_update_json() -> list:
+    out = []
+    if not os.path.isfile("update.json"):
+        return out
+    try:
+        man = load_json_safe("update.json", {})
+        ext_b64 = str(man.get("ext_b64", "")).strip()
+        if not ext_b64:
+            return out
+        dec = b64_decode_flex(ext_b64)
+        if not dec:
+            return out
+        ext = json.loads(dec)
+        feeds = ext.get("feeds", [])
+        if isinstance(feeds, list):
+            for idx, u in enumerate(feeds):
+                us = str(u).strip()
+                if us.startswith("https://") and "vip_clean.txt" not in us:
+                    out.append(("GLOBAL", f"AdminFeed-{idx + 1}", us, 180))
+    except Exception:
+        pass
+    return out
+
+
+def discover_github_feeds(sources_state: dict, now_ts: int) -> int:
+    token = os.environ.get("GITHUB_TOKEN", "").strip()
+    if not token:
+        return 0
+    last_disc = int(sources_state.get("last_discovery_ts", 0))
+    auto_map = sources_state.setdefault("auto_sources", {})
+    if len(auto_map) >= 12 and (now_ts - last_disc) < DISCOVERY_INTERVAL_SEC:
+        return 0
+
+    existing_urls = {f[2] for f in SEED_FEEDS} | set(auto_map.keys())
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "MW-CloudHunter/6.0",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    cutoff = (datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=5)).strftime("%Y-%m-%d")
+    queries = [
+        f"v2ray configs pushed:>={cutoff}",
+        f"shadowsocks vless trojan subscription pushed:>={cutoff}",
+        f"free v2ray nodes pushed:>={cutoff}",
+    ]
+    good_file_re = re.compile(
+        r"(?:^|/)(?:all|sub\d*|best|merged|valid|verified|ss|shadowsocks|trojan|vmess|vless|configs?|"
+        r"ae|tr|cy|de|it|fr|nl|gb|us|ca|sg|jp|au|br|in|kr|gr|bg|ro)\.(?:txt|sub)$",
+        re.IGNORECASE,
+    )
+    added = 0
+    own_repo = os.environ.get("GITHUB_REPOSITORY", "").lower()
+
+    for q in queries:
+        if len(auto_map) >= MAX_AUTO_DISCOVERED_SOURCES:
+            break
+        try:
+            url = f"https://api.github.com/search/repositories?q={urllib.parse.quote(q)}&sort=updated&order=desc&per_page=8"
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=14) as r:
+                data = json.loads(r.read().decode("utf-8", errors="ignore"))
+            for repo in data.get("items", []):
+                if len(auto_map) >= MAX_AUTO_DISCOVERED_SOURCES:
+                    break
+                full_name = str(repo.get("full_name", "")).strip()
+                if not full_name or full_name.lower() == own_repo or repo.get("archived") or repo.get("disabled"):
+                    continue
+                branch = str(repo.get("default_branch", "main")).strip() or "main"
+                try:
+                    t_url = f"https://api.github.com/repos/{full_name}/git/trees/{branch}?recursive=1"
+                    with urllib.request.urlopen(urllib.request.Request(t_url, headers=headers), timeout=12) as tr:
+                        tdata = json.loads(tr.read().decode("utf-8", errors="ignore"))
+                    picked_for_repo = 0
+                    for item in tdata.get("tree", []):
+                        if picked_for_repo >= 2 or len(auto_map) >= MAX_AUTO_DISCOVERED_SOURCES:
+                            break
+                        if item.get("type") != "blob":
+                            continue
+                        fpath = str(item.get("path", ""))
+                        fsize = int(item.get("size", 0))
+                        if fsize < 1500 or fsize > 1_600_000 or not good_file_re.search(fpath):
+                            continue
+                        cdn_url = f"https://cdn.jsdelivr.net/gh/{full_name}@{branch}/{fpath}"
+                        if cdn_url in existing_urls:
+                            continue
+                        existing_urls.add(cdn_url)
+                        short_name = f"Auto-{full_name.split('/')[-1][:10]}"
+                        bucket = "NEAR" if re.search(r"/(?:ae|tr|cy|gr|bg|ro)\.", fpath, re.I) else "GLOBAL"
+                        auto_map[cdn_url] = {
+                            "name": short_name,
+                            "bucket": bucket,
+                            "added_ts": now_ts,
+                            "zero_runs": 0,
+                            "ok_runs": 0,
+                            "quarantine_until": 0,
+                        }
+                        picked_for_repo += 1
+                        added += 1
+                except Exception:
+                    continue
+        except Exception:
+            continue
+
+    sources_state["last_discovery_ts"] = now_ts
+    return added
+
+
 def fetch_feed(feed_tuple):
     bucket, name, url, limit = feed_tuple
     out = []
@@ -1567,7 +1799,7 @@ def fetch_feed(feed_tuple):
         req = urllib.request.Request(
             url,
             headers={
-                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) MaintenanceWorldVPN-Feeder/5.0",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) MaintenanceWorldVPN-Hunter/6.0",
                 "Accept-Encoding": "identity",
             },
         )
@@ -1576,7 +1808,7 @@ def fetch_feed(feed_tuple):
         if "://" not in raw:
             raw = b64_decode_flex(raw)
         if not raw or "://" not in raw:
-            return bucket, name, []
+            return bucket, name, url, []
         for ln in raw.splitlines():
             if len(out) >= limit:
                 break
@@ -1587,31 +1819,64 @@ def fetch_feed(feed_tuple):
                 parsed["hint_bucket"] = classify_hint_bucket(ln, bucket)
                 out.append(parsed)
     except Exception:
-        return bucket, name, []
-    return bucket, name, out
+        return bucket, name, url, []
+    return bucket, name, url, out
 
 
-def load_previous_feed(seen_keys: set):
+def load_previous_candidates(prev_registry: dict, seen_keys: set) -> list:
     prev_nodes = []
-    if not os.path.isfile(PREV_FEED_FILE):
-        return prev_nodes
-    try:
-        with open(PREV_FEED_FILE, "r", encoding="utf-8", errors="ignore") as f:
-            for ln in f:
-                if len(prev_nodes) >= MAX_PREV_CANDIDATES:
-                    break
-                parsed = parse_compatible_node(ln)
-                if not parsed:
-                    continue
-                key = (parsed["j_proto"], parsed["host"].lower(), parsed["port"], parsed["sni"].lower(), parsed["ws_path"])
-                if key not in seen_keys:
-                    seen_keys.add(key)
-                    parsed["src"] = "PREV-ACCUM"
-                    parsed["is_prev"] = True
-                    parsed["hint_bucket"] = classify_hint_bucket(ln, "GLOBAL")
-                    prev_nodes.append(parsed)
-    except Exception:
-        pass
+    # 1) Prioritize high-reputation nodes from registry.json (including golden nodes in 1-run grace)
+    reg_entries = list(prev_registry.values()) if isinstance(prev_registry, dict) else []
+    reg_entries.sort(
+        key=lambda e: (
+            int(e.get("fails", 0)),
+            -int(e.get("streak", 0)),
+            -int(e.get("kbps", 0)),
+            int(e.get("rtt", 999)),
+        )
+    )
+    for ent in reg_entries:
+        if len(prev_nodes) >= MAX_PREV_CANDIDATES:
+            break
+        uri = str(ent.get("uri", "")).strip()
+        parsed = parse_compatible_node(uri)
+        if not parsed:
+            continue
+        fp = node_fingerprint(parsed)
+        if fp not in seen_keys:
+            seen_keys.add(fp)
+            parsed["src"] = "REGISTRY"
+            parsed["is_prev"] = True
+            parsed["prev_streak"] = int(ent.get("streak", 1))
+            cc_hint = str(ent.get("cc", "")).upper()
+            if cc_hint in NEAR_LOW_PING_COUNTRIES:
+                parsed["hint_bucket"] = "NEAR"
+            elif cc_hint in EU_LOW_PING_COUNTRIES:
+                parsed["hint_bucket"] = "EU"
+            else:
+                parsed["hint_bucket"] = classify_hint_bucket(uri, "GLOBAL")
+            prev_nodes.append(parsed)
+
+    # 2) Fallback / supplement from prev_vip_clean.txt
+    if os.path.isfile(PREV_FEED_FILE) and len(prev_nodes) < MAX_PREV_CANDIDATES:
+        try:
+            with open(PREV_FEED_FILE, "r", encoding="utf-8", errors="ignore") as f:
+                for ln in f:
+                    if len(prev_nodes) >= MAX_PREV_CANDIDATES:
+                        break
+                    parsed = parse_compatible_node(ln)
+                    if not parsed:
+                        continue
+                    fp = node_fingerprint(parsed)
+                    if fp not in seen_keys:
+                        seen_keys.add(fp)
+                        parsed["src"] = "PREV-FEED"
+                        parsed["is_prev"] = True
+                        parsed["prev_streak"] = 1
+                        parsed["hint_bucket"] = classify_hint_bucket(ln, "GLOBAL")
+                        prev_nodes.append(parsed)
+        except Exception:
+            pass
     return prev_nodes
 
 
@@ -1620,7 +1885,7 @@ def verify_candidates_java_real_exit(candidates):
     java = shutil.which("java")
     if not javac or not java:
         return None
-    tmp_dir = tempfile.mkdtemp(prefix="mw_real_exit_v5_")
+    tmp_dir = tempfile.mkdtemp(prefix="mw_hunter_v6_")
     try:
         src_p = os.path.join(tmp_dir, "RealExitVerifier.java")
         with open(src_p, "w", encoding="utf-8") as f:
@@ -1637,11 +1902,11 @@ def verify_candidates_java_real_exit(candidates):
         stdin_data = ("\n".join(tsv_lines) + "\n").encode("utf-8")
 
         proc = subprocess.run(
-            [java, "-Xmx320m", "-cp", tmp_dir, "RealExitVerifier"],
+            [java, "-Xmx384m", "-cp", tmp_dir, "RealExitVerifier"],
             input=stdin_data,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=270,
+            timeout=290,
         )
         results = {}
         for line in proc.stdout.decode("utf-8", errors="ignore").splitlines():
@@ -1653,8 +1918,9 @@ def verify_candidates_java_real_exit(candidates):
                     rtt = int(parts[3])
                     ai_ok = (len(parts) >= 5 and parts[4].strip() == "1")
                     cf_ok = (len(parts) >= 6 and parts[5].strip() == "1")
+                    kbps = int(parts[6]) if len(parts) >= 7 else 0
                     if len(cc) == 2 and rtt > 0:
-                        results[idx] = (cc, rtt, ai_ok, cf_ok)
+                        results[idx] = (cc, rtt, ai_ok, cf_ok, kbps)
                 except Exception:
                     pass
         return results
@@ -1693,6 +1959,8 @@ def verify_node_python_fallback(node: dict):
         node["rtt"] = rtt_ms
         node["real_cc"] = "UN"
         node["ai_ok"] = False
+        node["cf_ok"] = False
+        node["kbps"] = 0
         return node
     except Exception:
         return None
@@ -1717,14 +1985,19 @@ def run_self_test() -> int:
     if not javac or not java:
         print("[ERROR] javac/java غير متوفر!")
         return 1
-    tmp_dir = tempfile.mkdtemp(prefix="mw_selftest_v5_")
+    assert subnet24_key("151.241.19.29") == "151.241.19"
+    assert rewrite_clean_uri_tag("ss://abc@1.2.3.4:443#old", "AE", 88, True, True).endswith("#MW-AE-88ms|AI|CF")
+    sample = parse_compatible_node("ss://YWVzLTI1Ni1nY206cGFzc3dvcmQ=@1.1.1.1:443#AE")
+    assert sample is not None and sample["j_proto"] == "SS-AES256"
+
+    tmp_dir = tempfile.mkdtemp(prefix="mw_selftest_v6_")
     try:
         src_p = os.path.join(tmp_dir, "RealExitVerifier.java")
         with open(src_p, "w", encoding="utf-8") as f:
             f.write(JAVA_VERIFIER_SRC)
         subprocess.check_call([javac, "-Xlint:-options", "-encoding", "UTF-8", src_p], cwd=tmp_dir)
         subprocess.run([java, "-cp", tmp_dir, "RealExitVerifier"], input=b"", check=True, timeout=15)
-        print("[OK] اجتاز auto_feeder.py v5.2 الفحص الذاتي الأوفلاين (Accumulator + Low-Ping Tiering + Java Verifier) بـ 0 أخطاء!")
+        print("[OK] اجتاز Cloud Hunter v6.0 الفحص الذاتي الأوفلاين (Self-Evolving + Registry + 64KB Speed + CF/AI + World-First) بـ 0 أخطاء!")
         return 0
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
@@ -1735,21 +2008,63 @@ def main() -> int:
         return run_self_test()
 
     t_start = time.monotonic()
+    now_ts = int(time.time())
+
+    prev_registry = load_json_safe(PREV_REGISTRY_FILE, {})
+    if not isinstance(prev_registry, dict):
+        prev_registry = {}
+    sources_state = load_json_safe(PREV_SOURCES_FILE, {"seed_health": {}, "auto_sources": {}, "last_discovery_ts": 0})
+    if not isinstance(sources_state, dict):
+        sources_state = {"seed_health": {}, "auto_sources": {}, "last_discovery_ts": 0}
+    seed_health = sources_state.setdefault("seed_health", {})
+    auto_sources = sources_state.setdefault("auto_sources", {})
+
+    # 1) Autonomous GitHub source discovery (every 6 hours)
+    newly_discovered_sources = discover_github_feeds(sources_state, now_ts)
+
+    # 2) Build active feed list (Seed + Admin update.json feeds + Auto-discovered, skipping quarantined)
+    active_feeds = []
+    seen_feed_urls = set()
+    quarantined_count = 0
+
+    for item in load_admin_feeds_from_update_json():
+        if item[2] not in seen_feed_urls:
+            seen_feed_urls.add(item[2])
+            active_feeds.append(item)
+
+    for bucket, name, url, limit in SEED_FEEDS:
+        if url in seen_feed_urls:
+            continue
+        sh = seed_health.get(url, {})
+        if int(sh.get("quarantine_until", 0)) > now_ts:
+            quarantined_count += 1
+            continue
+        seen_feed_urls.add(url)
+        active_feeds.append((bucket, name, url, limit))
+
+    for url, meta in list(auto_sources.items()):
+        if url in seen_feed_urls:
+            continue
+        if int(meta.get("quarantine_until", 0)) > now_ts:
+            quarantined_count += 1
+            continue
+        seen_feed_urls.add(url)
+        active_feeds.append((meta.get("bucket", "GLOBAL"), meta.get("name", "AutoFeed"), url, 120))
+
+    # 3) Load previous high-reputation nodes FIRST
+    seen_keys = set()
+    prev_cands = load_previous_candidates(prev_registry, seen_keys)
+
+    # 4) Fetch all active feeds in parallel and update source health
     feed_stats = []
     near_buckets, eu_buckets, global_buckets = [], [], []
-    seen_keys = set()
-
-    # 1) Load previously verified live servers FIRST for persistent accumulation
-    prev_cands = load_previous_feed(seen_keys)
-
-    # 2) Fetch fresh candidates in parallel
-    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as ex:
-        for bucket, name, items in ex.map(fetch_feed, FEEDS):
+    with concurrent.futures.ThreadPoolExecutor(max_workers=24) as ex:
+        for bucket, name, url, items in ex.map(fetch_feed, active_feeds):
             u_near, u_eu, u_glob = [], [], []
             for item in items:
-                key = (item["j_proto"], item["host"].lower(), item["port"], item["sni"].lower(), item["ws_path"])
-                if key not in seen_keys:
-                    seen_keys.add(key)
+                fp = node_fingerprint(item)
+                if fp not in seen_keys:
+                    seen_keys.add(fp)
                     hb = item["hint_bucket"]
                     if hb == "NEAR":
                         u_near.append(item)
@@ -1764,6 +2079,30 @@ def main() -> int:
             if u_glob:
                 global_buckets.append(u_glob)
             feed_stats.append((name, len(items), len(u_near) + len(u_eu) + len(u_glob)))
+
+            # Track source health & quarantine dead sources automatically
+            if url in auto_sources:
+                m = auto_sources[url]
+                if len(items) > 0:
+                    m["zero_runs"] = 0
+                    m["ok_runs"] = int(m.get("ok_runs", 0)) + 1
+                    m["quarantine_until"] = 0
+                else:
+                    m["zero_runs"] = int(m.get("zero_runs", 0)) + 1
+                    if m["zero_runs"] >= 6:
+                        del auto_sources[url]
+                    elif m["zero_runs"] >= 3:
+                        m["quarantine_until"] = now_ts + SOURCE_QUARANTINE_SEC
+            else:
+                sh = seed_health.setdefault(url, {"zero_runs": 0, "ok_runs": 0, "quarantine_until": 0})
+                if len(items) > 0:
+                    sh["zero_runs"] = 0
+                    sh["ok_runs"] = int(sh.get("ok_runs", 0)) + 1
+                    sh["quarantine_until"] = 0
+                else:
+                    sh["zero_runs"] = int(sh.get("zero_runs", 0)) + 1
+                    if sh["zero_runs"] >= 5:
+                        sh["quarantine_until"] = now_ts + SOURCE_QUARANTINE_SEC
 
     def round_robin_pick(buckets, limit):
         picked = []
@@ -1782,8 +2121,9 @@ def main() -> int:
     candidates = prev_cands + near_cands + eu_cands + global_cands
 
     print(
-        f"[INFO] Verifying {len(candidates)} unique candidates "
-        f"(Prev={len(prev_cands)}, Near={len(near_cands)}, EU={len(eu_cands)}, Global={len(global_cands)}) from {len(FEEDS)} feeds."
+        f"[INFO] Cloud Hunter v6.0 verifying {len(candidates)} candidates "
+        f"(Prev={len(prev_cands)}, Near={len(near_cands)}, EU={len(eu_cands)}, Global={len(global_cands)}) "
+        f"from {len(active_feeds)} active feeds (auto={len(auto_sources)}, new_auto={newly_discovered_sources}, quarantined={quarantined_count})."
     )
     if not candidates:
         print("[WARN] No compatible candidates fetched.")
@@ -1791,25 +2131,41 @@ def main() -> int:
 
     verified = []
     blocked_dropped = 0
+    slow_dropped = 0
     fake_near_dropped = 0
     kept_from_prev = 0
     newly_verified = 0
-    mode_label = "Accumulator + Real-Ping Tiering (Java Engine)"
+    mode_label = "Autonomous Hunter + 64KB Speed + CF/AI (Java Engine)"
 
     java_res = verify_candidates_java_real_exit(candidates)
+    verified_fps = set()
+
     if java_res is not None:
-        for idx, (cc, rtt_ms, ai_ok, cf_ok) in java_res.items():
+        for idx, (cc, rtt_ms, ai_ok, cf_ok, kbps) in java_res.items():
             node = candidates[idx]
             if cc in BLOCKED_COUNTRIES:
                 blocked_dropped += 1
                 continue
+            # Drop confirmed heavily-throttled servers (< 80 KB/s), except ultra-rare NEAR/MENA (> 45 KB/s)
+            min_speed = 45 if cc in NEAR_LOW_PING_COUNTRIES else MIN_ACCEPTABLE_KBPS
+            if kbps > 0 and kbps < min_speed:
+                slow_dropped += 1
+                continue
             if node.get("hint_bucket") == "NEAR" and cc not in NEAR_LOW_PING_COUNTRIES:
                 fake_near_dropped += 1
+            fp = node_fingerprint(node)
+            old_reg = prev_registry.get(fp, {})
+            streak = int(old_reg.get("streak", 0)) + 1
+
+            node["fp"] = fp
             node["real_cc"] = cc
             node["rtt"] = rtt_ms
             node["ai_ok"] = ai_ok
             node["cf_ok"] = cf_ok
+            node["kbps"] = kbps
+            node["streak"] = streak
             node["uri"] = rewrite_clean_uri_tag(node["uri"], cc, rtt_ms, ai_ok, cf_ok)
+            verified_fps.add(fp)
             if node.get("is_prev"):
                 kept_from_prev += 1
             else:
@@ -1820,73 +2176,108 @@ def main() -> int:
         with concurrent.futures.ThreadPoolExecutor(max_workers=64) as ex:
             for res in ex.map(verify_node_python_fallback, candidates):
                 if res is not None:
+                    res["fp"] = node_fingerprint(res)
+                    res["streak"] = 1
                     verified.append(res)
 
     proto_priority = {"SS-AEAD": 0, "TROJAN-TLS": 1, "VMESS-AEAD": 2, "VLESS-TLS": 3, "VMESS-TLS": 3}
 
-    def low_ping_sort_key(n):
-        direct_pen = 0 if n.get("direct") else 40
+    def quality_sort_key(n):
+        # Composite score: Cloudflare clean -> Direct VPS -> Real Speed (KB/s) -> Stability streak -> RTT
+        speed_tier = 0 if n.get("kbps", 0) >= 500 else (1 if n.get("kbps", 0) >= 200 else (2 if n.get("kbps", 0) >= 80 else 3))
+        direct_pen = 0 if n.get("direct") else 45
+        streak_bonus = min(60, int(n.get("streak", 1)) * 6)
         return (
             0 if n.get("cf_ok") else 1,
             0 if n.get("direct") else 1,
+            speed_tier,
             proto_priority.get(n["proto"], 4),
-            n["rtt"] + direct_pen,
+            max(1, n["rtt"] + direct_pen - streak_bonus),
         )
 
-    near_verified = [n for n in verified if n.get("real_cc") in NEAR_LOW_PING_COUNTRIES]
-    eu_verified = [n for n in verified if n.get("real_cc") in EU_LOW_PING_COUNTRIES]
+    all_sorted = sorted(verified, key=quality_sort_key)
+    near_verified = [n for n in all_sorted if n.get("real_cc") in NEAR_LOW_PING_COUNTRIES]
+    eu_verified = [n for n in all_sorted if n.get("real_cc") in EU_LOW_PING_COUNTRIES]
     global_verified = [
-        n for n in verified
+        n for n in all_sorted
         if n.get("real_cc") not in NEAR_LOW_PING_COUNTRIES and n.get("real_cc") not in EU_LOW_PING_COUNTRIES
     ]
 
-    near_verified.sort(key=lambda n: (0 if n.get("real_cc") in MENA_COUNTRIES else 1, low_ping_sort_key(n)))
-    eu_verified.sort(key=low_ping_sort_key)
-    global_verified.sort(key=lambda n: (0 if n.get("ai_ok") else 1, low_ping_sort_key(n)))
+    near_verified.sort(key=lambda n: (0 if n.get("real_cc") in MENA_COUNTRIES else 1, quality_sort_key(n)))
+    global_verified.sort(key=lambda n: (0 if n.get("ai_ok") else 1, quality_sort_key(n)))
 
     final_nodes = []
     added_ids = set()
     host_counts = {}
+    subnet_counts = {}
     proto_counts = {}
     cc_counts = {}
     ai_published = 0
+    cf_published = 0
 
-    def try_add(n, max_per_host):
-        nonlocal ai_published
+    def try_add(n, max_per_host, max_per_subnet):
+        nonlocal ai_published, cf_published
         nid = id(n)
         if nid in added_ids or len(final_nodes) >= MAX_FINAL_NODES:
             return False
         hk = n["host"].lower()
         if host_counts.get(hk, 0) >= max_per_host:
             return False
+        subk = subnet24_key(hk)
+        if subnet_counts.get(subk, 0) >= max_per_subnet:
+            return False
         added_ids.add(nid)
         host_counts[hk] = host_counts.get(hk, 0) + 1
+        subnet_counts[subk] = subnet_counts.get(subk, 0) + 1
         final_nodes.append(n)
         if n.get("ai_ok"):
             ai_published += 1
+        if n.get("cf_ok"):
+            cf_published += 1
         proto_counts[n["proto"]] = proto_counts.get(n["proto"], 0) + 1
         cc = n.get("real_cc", "UN")
         cc_counts[cc] = cc_counts.get(cc, 0) + 1
         return True
 
+    # Seat Block 0 (World-First Global Diversity): guarantee top 2 servers from EVERY unique country found!
+    by_cc = {}
+    for n in all_sorted:
+        cc = n.get("real_cc", "UN")
+        if cc != "UN":
+            by_cc.setdefault(cc, []).append(n)
+    # Order countries: Near/MENA -> Non-EU World -> Europe
+    ordered_ccs = sorted(
+        by_cc.keys(),
+        key=lambda c: (0 if c in NEAR_LOW_PING_COUNTRIES else (1 if c not in EU_LOW_PING_COUNTRIES else 2), c),
+    )
+    for cc in ordered_ccs:
+        seated = 0
+        for n in by_cc[cc]:
+            if seated >= 2:
+                break
+            is_near = cc in NEAR_LOW_PING_COUNTRIES
+            if try_add(n, MAX_PER_HOST_NEAR if is_near else MAX_PER_HOST_GLOBAL,
+                       MAX_PER_SUBNET_NEAR if is_near else MAX_PER_SUBNET_GLOBAL):
+                seated += 1
+
     # Seat Block 1: Tier 0 (MENA + Near Balkans — lowest real ping to Syria)
-    near_added = 0
+    near_added = sum(v for k, v in cc_counts.items() if k in NEAR_LOW_PING_COUNTRIES)
     for n in near_verified:
         if near_added >= NEAR_RESERVED_SLOTS:
             break
-        if try_add(n, MAX_PER_HOST_NEAR):
+        if try_add(n, MAX_PER_HOST_NEAR, MAX_PER_SUBNET_NEAR):
             near_added += 1
 
-    # Seat Block 2: Top Verified |AI Bridge Nodes (US/CA/SG/JP/AU) right near top for instant Gemini unlock
-    ai_bridge_added = 0
+    # Seat Block 2: Top Verified |AI Bridge Nodes (US/CA/SG/JP/AU/AE/SA)
+    ai_bridge_added = sum(1 for n in final_nodes if n.get("ai_ok"))
     for n in global_verified:
         if ai_bridge_added >= AI_BRIDGE_RESERVED_SLOTS:
             break
-        if n.get("ai_ok") and try_add(n, MAX_PER_HOST_GLOBAL):
+        if n.get("ai_ok") and try_add(n, MAX_PER_HOST_GLOBAL, MAX_PER_SUBNET_GLOBAL):
             ai_bridge_added += 1
 
-    # Seat Block 3: Tier 1 (Fast Central & Med Europe — IT, DE, AT, CH, FR, NL, GB, PL, SE, FI...)
-    eu_added = 0
+    # Seat Block 3: Tier 1 (Fast Central & Med Europe)
+    eu_added = sum(v for k, v in cc_counts.items() if k in EU_LOW_PING_COUNTRIES)
     eu_overflow = []
     for n in eu_verified:
         if eu_added >= EU_RESERVED_SLOTS:
@@ -1896,10 +2287,10 @@ def main() -> int:
         if cc_counts.get(cc, 0) >= EU_COUNTRY_CAP:
             eu_overflow.append(n)
             continue
-        if try_add(n, MAX_PER_HOST_EU):
+        if try_add(n, MAX_PER_HOST_GLOBAL, MAX_PER_SUBNET_GLOBAL):
             eu_added += 1
 
-    # Seat Block 4: Tier 2 (Global diversity — US, CA, SG, JP, KR, AU, BR, IN...)
+    # Seat Block 4: Tier 2 (Global diversity)
     global_overflow = []
     for n in global_verified:
         if len(final_nodes) >= MAX_FINAL_NODES:
@@ -1909,43 +2300,98 @@ def main() -> int:
         if cc_counts.get(cc, 0) >= cap:
             global_overflow.append(n)
             continue
-        try_add(n, MAX_PER_HOST_GLOBAL)
+        try_add(n, MAX_PER_HOST_GLOBAL, MAX_PER_SUBNET_GLOBAL)
 
-    # Seat Block 5: Balanced Backfill (prevents US/JP/NL from dominating 70% of the feed)
+    # Seat Block 5: Balanced Backfill with hard per-country & /24 caps
     for n in near_verified + eu_overflow + global_overflow:
         if len(final_nodes) >= MAX_FINAL_NODES:
             break
         cc = n.get("real_cc", "UN")
-        hard_cap = 65 if cc == "US" else (45 if cc in ("JP", "NL") else (40 if cc in NEAR_LOW_PING_COUNTRIES else 26))
+        hard_cap = 60 if cc == "US" else (42 if cc in ("JP", "NL") else (45 if cc in NEAR_LOW_PING_COUNTRIES else 24))
         if cc_counts.get(cc, 0) >= hard_cap:
             continue
-        try_add(n, MAX_PER_HOST_NEAR if cc in NEAR_LOW_PING_COUNTRIES else MAX_PER_HOST_GLOBAL)
+        is_near = cc in NEAR_LOW_PING_COUNTRIES
+        try_add(n, MAX_PER_HOST_NEAR if is_near else MAX_PER_HOST_GLOBAL,
+                MAX_PER_SUBNET_NEAR if is_near else MAX_PER_SUBNET_GLOBAL)
 
     if not final_nodes:
         print("[WARN] Zero nodes passed strict Real-Exit verification.")
         return 0
 
+    # Re-order final vip_clean.txt cleanly: NEAR -> Top AI -> EU -> Global (each sorted by quality)
+    final_near = [n for n in final_nodes if n.get("real_cc") in NEAR_LOW_PING_COUNTRIES]
+    final_ai_top = [n for n in final_nodes if n.get("ai_ok") and n.get("real_cc") not in NEAR_LOW_PING_COUNTRIES][:24]
+    ai_top_ids = {id(n) for n in final_ai_top}
+    final_eu = [n for n in final_nodes if n.get("real_cc") in EU_LOW_PING_COUNTRIES and id(n) not in ai_top_ids]
+    final_rest = [
+        n for n in final_nodes
+        if n.get("real_cc") not in NEAR_LOW_PING_COUNTRIES
+        and n.get("real_cc") not in EU_LOW_PING_COUNTRIES
+        and id(n) not in ai_top_ids
+    ]
+    ordered_final = final_near + final_ai_top + final_eu + final_rest
+
     with open("vip_clean.txt", "w", encoding="utf-8") as f:
-        for n in final_nodes:
+        for n in ordered_final:
             f.write(n["uri"] + "\n")
+
+    # Build updated Reputation Registry (all currently verified + 1-run grace for golden nodes)
+    new_registry = {}
+    for n in ordered_final:
+        fp = n["fp"]
+        old_e = prev_registry.get(fp, {})
+        new_registry[fp] = {
+            "uri": n["uri"],
+            "cc": n.get("real_cc", "UN"),
+            "rtt": n["rtt"],
+            "kbps": n.get("kbps", 0),
+            "ai_ok": bool(n.get("ai_ok")),
+            "cf_ok": bool(n.get("cf_ok")),
+            "streak": int(n.get("streak", 1)),
+            "fails": 0,
+            "first_seen": int(old_e.get("first_seen", now_ts)),
+            "last_seen": now_ts,
+        }
+
+    grace_kept = 0
+    for fp, old_e in prev_registry.items():
+        if fp in new_registry or fp in verified_fps or len(new_registry) >= 620:
+            continue
+        streak = int(old_e.get("streak", 0))
+        fails = int(old_e.get("fails", 0)) + 1
+        # Golden servers (streak >= 3) get 1 cycle grace in registry (NOT published to vip_clean.txt while down)
+        if streak >= 3 and fails <= 1:
+            e_copy = dict(old_e)
+            e_copy["fails"] = fails
+            new_registry[fp] = e_copy
+            grace_kept += 1
+
+    with open("registry.json", "w", encoding="utf-8") as f:
+        json.dump(new_registry, f, ensure_ascii=False, separators=(",", ":"))
+
+    with open("sources_state.json", "w", encoding="utf-8") as f:
+        json.dump(sources_state, f, ensure_ascii=False, indent=2)
 
     elapsed = round(time.monotonic() - t_start, 1)
     now_utc = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    rtts = [n["rtt"] for n in final_nodes]
+    rtts = [n["rtt"] for n in ordered_final]
+    speeds = [n.get("kbps", 0) for n in ordered_final if n.get("kbps", 0) > 0]
     avg_rtt = int(sum(rtts) / max(1, len(rtts)))
+    avg_kbps = int(sum(speeds) / max(1, len(speeds))) if speeds else 0
     near_cc_str = ", ".join(f"{k}={v}" for k, v in sorted(cc_counts.items()) if k in NEAR_LOW_PING_COUNTRIES) or "None"
-    top_cc_str = ", ".join(f"{k}={v}" for k, v in sorted(cc_counts.items(), key=lambda kv: -kv[1])[:18])
+    top_cc_str = ", ".join(f"{k}={v}" for k, v in sorted(cc_counts.items(), key=lambda kv: -kv[1])[:24])
     dead_prev = max(0, len(prev_cands) - kept_from_prev)
 
     lines = [
         "==========================================================",
-        f"MaintenanceWorld VPN — Cloud Accumulator Stats (v5.2 {mode_label})",
+        f"MaintenanceWorld VPN — Cloud Hunter Stats (v6.0 {mode_label})",
         f"Updated: {now_utc} | Scan Duration: {elapsed}s",
-        f"Candidates: {len(candidates)} | Real-Verified: {len(verified)} | Published: {len(final_nodes)} | Countries: {len(cc_counts)} | AI-Clean: {ai_published}",
-        f"Accumulator: Prev-Kept={kept_from_prev} | Prev-Dead-Purged={dead_prev} | Newly-Found={newly_verified}",
+        f"Candidates: {len(candidates)} | Real-Verified: {len(verified)} | Published: {len(ordered_final)} | Countries: {len(cc_counts)} | AI-Clean: {ai_published} | CF-Clean: {cf_published}",
+        f"Reputation: Prev-Kept={kept_from_prev} | Golden-Grace={grace_kept} | Dead-Purged={dead_prev} | Newly-Found={newly_verified}",
+        f"Sources: Active={len(active_feeds)} | Auto-Discovered={len(auto_sources)} (+{newly_discovered_sources}) | Quarantined={quarantined_count}",
         f"Tier-0 Near/MENA Published: {near_added} ({near_cc_str})",
-        f"Tier-1 Europe Published: {eu_added} | Filtered Out: Blocked-CC={blocked_dropped} | Fake-Near={fake_near_dropped}",
-        f"RTT (US Runner): min={min(rtts)}ms | avg={avg_rtt}ms | max={max(rtts)}ms",
+        f"Tier-1 Europe Published: {eu_added} | Filtered: Blocked-CC={blocked_dropped} | Slow-Drop={slow_dropped} | Fake-Near={fake_near_dropped}",
+        f"Performance: RTT min={min(rtts)}ms avg={avg_rtt}ms | Real Speed avg={avg_kbps} KB/s (tested={len(speeds)})",
         "Protocols: " + ", ".join(f"{k}={v}" for k, v in sorted(proto_counts.items())),
         "Top Exit Countries: " + top_cc_str,
         "==========================================================",
