@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MaintenanceWorld VPN — Cloud Auto Feeder v5.0
+MaintenanceWorld VPN — Cloud Auto Feeder v5.1
 (Persistent Accumulator + Real-Ping Levant/MENA/EU Tiering + 2-Gate Non-EU AI-Clean)
 - Accumulates live verified servers from prev_vip_clean.txt across hourly runs and drops dead ones.
 - Prioritizes geographically closest regions to Syria/MENA for lowest real client ping
@@ -912,17 +912,19 @@ public final class RealExitVerifier {
 
     private static Socket openProxyChannel(String proto, String ip, int port, String auth,
                                            String sni, String wsHost, String wsPath, String net,
-                                           String destHost, int destPort, int[] rttOut) throws Exception {
+                                           String destHost, int destPort, int[] rttOut, boolean isNear) throws Exception {
         Socket raw = new Socket();
         try {
+            int cTo = isNear ? 3600 : 2400;
+            int rTo = isNear ? 4400 : 3400;
             raw.setTcpNoDelay(true);
             long t0 = System.nanoTime();
-            raw.connect(new InetSocketAddress(ip, port), 2200);
+            raw.connect(new InetSocketAddress(ip, port), cTo);
             rttOut[0] = (int) Math.max(1L, (System.nanoTime() - t0) / 1_000_000L);
-            raw.setSoTimeout(3200);
+            raw.setSoTimeout(rTo);
 
             boolean outerTls = "TROJAN-TLS".equals(proto) || "VLESS-TLS".equals(proto) || "VMESS-TLS".equals(proto);
-            Socket carrier = outerTls ? wrapStrictTls(raw, sni, port, 3200) : raw;
+            Socket carrier = outerTls ? wrapStrictTls(raw, sni, port, rTo) : raw;
 
             if ("ws".equals(net)) {
                 String path = (wsPath == null || wsPath.isEmpty()) ? "/" : (wsPath.startsWith("/") ? wsPath : "/" + wsPath);
@@ -999,9 +1001,10 @@ public final class RealExitVerifier {
         try {
             String ip = resolvePublicIpv4(f[2]);
             if (ip == null) return null;
-            proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], geoHost, 443, rttOut);
+            boolean isNear = f.length >= 10 && "NEAR".equals(f[9]);
+            proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], geoHost, 443, rttOut, isNear);
             if (proxy == null) return null;
-            ssl = wrapStrictTls(proxy, geoHost, 443, 3400);
+            ssl = wrapStrictTls(proxy, geoHost, 443, isNear ? 4400 : 3400);
             OutputStream out = ssl.getOutputStream();
             out.write(("GET " + path + " HTTP/1.1\r\nHost: " + geoHost + "\r\nUser-Agent: Mozilla/5.0\r\nAccept-Encoding: identity\r\nConnection: close\r\n\r\n")
                     .getBytes(StandardCharsets.US_ASCII));
@@ -1055,7 +1058,8 @@ public final class RealExitVerifier {
             if (ip == null) return false;
             int[] dummyRtt = {0};
             String host = "generativelanguage.googleapis.com";
-            proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], host, 443, dummyRtt);
+            boolean isNear = f.length >= 10 && "NEAR".equals(f[9]);
+            proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], host, 443, dummyRtt, isNear);
             if (proxy == null) return false;
             ssl = wrapStrictTls(proxy, host, 443, 3800);
             OutputStream out = ssl.getOutputStream();
@@ -1114,7 +1118,8 @@ public final class RealExitVerifier {
             if (ip == null) return false;
             int[] dummyRtt = {0};
             String host = "gemini.google.com";
-            proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], host, 443, dummyRtt);
+            boolean isNear = f.length >= 10 && "NEAR".equals(f[9]);
+            proxy = openProxyChannel(f[1], ip, Integer.parseInt(f[3]), f[4], f[5], f[6], f[7], f[8], host, 443, dummyRtt, isNear);
             if (proxy == null) return false;
             ssl = wrapStrictTls(proxy, host, 443, 3800);
             OutputStream out = ssl.getOutputStream();
@@ -1562,7 +1567,7 @@ def verify_candidates_java_real_exit(candidates):
         for idx, n in enumerate(candidates):
             row = "\t".join([
                 str(idx), n["j_proto"], n["host"], str(n["port"]), n["auth"],
-                n["sni"], n["ws_host"], n["ws_path"], n["transport"]
+                n["sni"], n["ws_host"], n["ws_path"], n["transport"], n.get("hint_bucket", "GLOBAL")
             ])
             tsv_lines.append(row)
         stdin_data = ("\n".join(tsv_lines) + "\n").encode("utf-8")
@@ -1654,7 +1659,7 @@ def run_self_test() -> int:
             f.write(JAVA_VERIFIER_SRC)
         subprocess.check_call([javac, "-Xlint:-options", "-encoding", "UTF-8", src_p], cwd=tmp_dir)
         subprocess.run([java, "-cp", tmp_dir, "RealExitVerifier"], input=b"", check=True, timeout=15)
-        print("[OK] اجتاز auto_feeder.py v5.0 الفحص الذاتي الأوفلاين (Accumulator + Low-Ping Tiering + Java Verifier) بـ 0 أخطاء!")
+        print("[OK] اجتاز auto_feeder.py v5.1 الفحص الذاتي الأوفلاين (Accumulator + Low-Ping Tiering + Java Verifier) بـ 0 أخطاء!")
         return 0
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
@@ -1839,11 +1844,15 @@ def main() -> int:
             continue
         try_add(n, MAX_PER_HOST_GLOBAL)
 
-    # Seat Block 5: Backfill remaining slots up to MAX_FINAL_NODES (EU first for lower ping, then Global)
-    for n in eu_overflow + global_overflow:
+    # Seat Block 5: Balanced Backfill (prevents US/JP/NL from dominating 70% of the feed)
+    for n in near_verified + eu_overflow + global_overflow:
         if len(final_nodes) >= MAX_FINAL_NODES:
             break
-        try_add(n, MAX_PER_HOST_GLOBAL)
+        cc = n.get("real_cc", "UN")
+        hard_cap = 65 if cc == "US" else (45 if cc in ("JP", "NL") else (40 if cc in NEAR_LOW_PING_COUNTRIES else 26))
+        if cc_counts.get(cc, 0) >= hard_cap:
+            continue
+        try_add(n, MAX_PER_HOST_NEAR if cc in NEAR_LOW_PING_COUNTRIES else MAX_PER_HOST_GLOBAL)
 
     if not final_nodes:
         print("[WARN] Zero nodes passed strict Real-Exit verification.")
@@ -1863,7 +1872,7 @@ def main() -> int:
 
     lines = [
         "==========================================================",
-        f"MaintenanceWorld VPN — Cloud Accumulator Stats (v5.0 {mode_label})",
+        f"MaintenanceWorld VPN — Cloud Accumulator Stats (v5.1 {mode_label})",
         f"Updated: {now_utc} | Scan Duration: {elapsed}s",
         f"Candidates: {len(candidates)} | Real-Verified: {len(verified)} | Published: {len(final_nodes)} | Countries: {len(cc_counts)} | AI-Clean: {ai_published}",
         f"Accumulator: Prev-Kept={kept_from_prev} | Prev-Dead-Purged={dead_prev} | Newly-Found={newly_verified}",
